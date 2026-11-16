@@ -143,6 +143,48 @@ pre.mono{background:var(--surface);border:1px solid var(--line);border-radius:8p
 .rev .yy{font-size:14px;color:var(--muted);margin-top:4px}
 .rev .aa{font-size:14px;margin-top:2px}
 .rev .ee{font-size:14px;margin-top:4px}
+/* NetAcad-style runner */
+:root{--nq-card:#ebebed;--nq-sel:#dcf3fc;--nq-selb:#46b1e1;--nq-green:#5fb53d;--nq-greenbg:#eaf7e4;--nq-red:#d64545;--nq-redbg:#fdecec}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--nq-card:#25303a;--nq-sel:#123a4f;--nq-greenbg:#18311c;--nq-redbg:#3a1c1d;--nq-red:#ef6b6b}}
+:root[data-theme="dark"]{--nq-card:#25303a;--nq-sel:#123a4f;--nq-greenbg:#18311c;--nq-redbg:#3a1c1d;--nq-red:#ef6b6b}
+#run.panel{padding:18px 18px 22px}
+.nq-title{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px;color:var(--muted);margin-bottom:10px}
+.nq-top{display:flex;align-items:center;gap:6px;margin:0 0 20px}
+.nq-tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 2px;flex:1;scrollbar-width:thin}
+.nq-tab{flex:0 0 auto;min-width:48px;height:38px;padding:0 6px;border:2px solid var(--nq-green);border-radius:6px;background:var(--surface);color:var(--ink);font:500 15px var(--font-body);cursor:pointer}
+.nq-tab.done{background:var(--nq-greenbg)}
+.nq-tab.ok{background:var(--nq-greenbg)}
+.nq-tab.bad{border-color:var(--nq-red);background:var(--nq-redbg)}
+.nq-tab.cur{background:var(--nq-green);color:#fff}
+.nq-tab.bad.cur{background:var(--nq-red)}
+.nq-res{flex:0 0 auto;display:inline-flex;align-items:center;height:38px;padding:0 14px;border:0;border-radius:6px;background:var(--nq-green);color:#fff;font:600 14px var(--font-body);cursor:pointer;white-space:nowrap}
+.nq-arw{flex:0 0 auto;min-width:36px;height:40px;border:2px solid var(--nq-green);border-radius:6px;background:var(--surface);color:var(--nq-green);font:700 20px/1 var(--font-body);cursor:pointer}
+.nq-arw.wide{padding:0 16px;font-size:16px}
+.nq-arw:disabled{opacity:.35;cursor:default}
+.nq-h{font-family:var(--font-body);font-weight:700;font-size:32px;margin:4px 0 2px}
+.nq-meta{font-size:13px;color:var(--muted);margin:0 0 14px}
+.nq-q{font-size:18px;line-height:1.6;margin:0 0 22px;text-wrap:pretty}
+.nq-opts{display:grid;gap:14px}
+.nq-opt{position:relative;display:flex;align-items:center;gap:18px;width:100%;min-height:70px;padding:14px 18px;text-align:left;border:2px solid transparent;border-radius:8px;background:var(--nq-card);color:var(--ink);font:400 17px var(--font-body);cursor:pointer;overflow:hidden}
+.nq-opt:hover:not([disabled]){border-color:var(--line)}
+.nq-mark{flex:0 0 42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:22px;font-weight:700;color:var(--nq-green)}
+.nq-opt.sel{background:var(--nq-sel);border-color:var(--nq-selb)}
+.nq-opt.sel::after{content:"";position:absolute;top:0;right:0;border-style:solid;border-width:0 38px 38px 0;border-color:transparent var(--nq-selb) transparent transparent}
+.nq-opt.sel .nq-mark,.nq-opt.ok .nq-mark,.nq-opt.bad .nq-mark{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.nq-opt.ok{background:var(--nq-greenbg);border-color:var(--nq-green)}
+.nq-opt.ok.miss{border-style:dashed}
+.nq-opt.bad{background:var(--nq-redbg);border-color:var(--nq-red)}
+.nq-opt.bad .nq-mark{color:var(--nq-red)}
+.nq-opt[disabled]{cursor:default}
+.nq-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:22px}
+.nq-pill{border:0;border-radius:999px;background:var(--nq-green);color:#fff;font:600 16px var(--font-body);padding:10px 34px;cursor:pointer}
+.nq-pill:disabled{opacity:.45;cursor:default}
+.nq-result{text-align:center;padding:16px 0 4px}
+.nq-result svg{display:block;margin:0 auto}
+.g-bg{fill:none;stroke:var(--line);stroke-width:14;stroke-linecap:round}
+.g-fg{fill:none;stroke:var(--nq-green);stroke-width:14;stroke-linecap:round}
+.g-pct{font:700 34px var(--font-body);margin-top:-58px;margin-bottom:26px;font-variant-numeric:tabular-nums}
+.nq-link{color:var(--ink)}
 /* cheat */
 .search{width:100%;font:16px var(--font-body);padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .facts{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
@@ -904,14 +946,14 @@ function renderLesson(l){
   $("#v-lesson").innerHTML = h;
 }
 
-/* ===================== QUIZ / EXAM RUNNER ===================== */
+/* ===================== QUIZ / EXAM RUNNER (NetAcad-style) ===================== */
 let S = null, timerId = null;
 function makeOpts(q){ const k=kind(q); if(k==="order") return shuffle(q.items); if(k==="match") return shuffle([...new Set(q.pairs.map(p=>p[1]).concat(q.extra||[]))]); return shuffle(q.o.map(clean)); }
 function initAns(q){ return kind(q)==="match" ? q.pairs.map(()=>"") : []; }
 function startSession(o){
   clearInterval(timerId);
   let list = shuffle(o.list); if (o.n) list = list.slice(0,o.n);
-  S = {cfg:o, title:o.title, mode:o.mode, key:o.key, list, i:0, opts:list.map(makeOpts), ans:list.map(initAns), res:list.map(()=>null), done:false, confirm:false, deadline:o.minutes?Date.now()+o.minutes*60000:null};
+  S = {cfg:o, title:o.title, mode:o.mode, key:o.key, list, i:0, opts:list.map(makeOpts), ans:list.map(initAns), res:list.map(()=>null), done:false, review:false, confirm:false, deadline:o.minutes?Date.now()+o.minutes*60000:null};
   if (S.deadline) timerId = setInterval(tick, 1000);
   if (location.hash!=="#quiz") location.hash = "quiz"; else { showView("run"); window.scrollTo({top:0}); }
 }
@@ -937,33 +979,37 @@ function userText(q,ans,opts){
   if (k==="order") return ans.length ? ans.map(i=>opts[i]).join(" → ") : "—";
   return ans.length ? ans.map(i=>opts[i]).join(", ") : "—";
 }
+const keyShown = j => S.review || (S.mode==="practice" && S.res[j]!==null);
+function tabState(j){
+  if (keyShown(j)) return S.res[j] ? "ok" : "bad";
+  return isAnswered(S.list[j],S.ans[j]) ? "done" : "";
+}
 
 function renderRun(){
   const box = $("#run");
   if (!S){ box.innerHTML = '<p class="empty">Тест не запущен. <a href="#course">К темам</a></p>'; return; }
-  if (S.done){ renderResults(); return; }
+  if (S.done && !S.review){ renderResults(); return; }
   const N = S.list.length, q = S.list[S.i], k = kind(q), ans = S.ans[S.i], opts = S.opts[S.i];
-  const locked = S.mode==="practice" && S.res[S.i]!==null;
-  const answered = S.list.filter((qq,j)=>isAnswered(qq,S.ans[j])).length;
-  const done = S.res.filter(x=>x!==null).length, right = S.res.filter(x=>x===true).length;
+  const showKey = keyShown(S.i), locked = showKey;
   const L = LESSONS[q.l];
-  let h = '<div class="runhead"><div><p class="label">'+(S.mode==="exam"?"Пробный тест":"Квиз")+'</p><h2 class="runtitle">'+esc(S.title)+'</h2></div>'+
-          (S.deadline?'<div class="timer" id="timer" aria-live="off">'+fmt(S.deadline-Date.now())+'</div>':'')+'</div>';
-  h += '<div class="meta"><span>Вопрос '+(S.i+1)+' из '+N+'</span><span>'+(S.mode==="exam"?'Отвечено: '+answered+' / '+N:'Верно: '+right+' / '+done)+'</span></div>';
-  h += '<div class="progress" aria-hidden="true"><i style="width:'+Math.round((S.mode==="exam"?answered:done)/N*100)+'%"></i></div>';
-  h += '<div class="badges"><span class="badge">'+esc(L.wk+" · "+L.short)+'</span><span class="badge src">'+esc(q.s)+'</span></div>';
-  h += '<p class="q">'+esc(q.q)+'</p>';
-  if (k==="multi") h += '<p class="hint">Выбери '+rightOf(q).length+' ответа</p>';
+  let h = '<div class="nq-title"><span>'+esc(S.title)+(S.review?' · разбор':'')+'</span>'+(S.deadline&&!S.done?'<span class="timer" id="timer">'+fmt(S.deadline-Date.now())+'</span>':'')+'</div>';
+  h += '<div class="nq-top"><button type="button" class="nq-arw" data-act="prev" aria-label="Предыдущий вопрос"'+(S.i===0?' disabled':'')+'>‹</button><div class="nq-tabs">';
+  h += S.list.map((qq,j)=>'<button type="button" class="nq-tab '+tabState(j)+(j===S.i?' cur':'')+'" data-act="go" data-k="'+j+'">Q'+(j+1)+'</button>').join("");
+  h += '<button type="button" class="nq-res" data-act="'+(S.done?'results':'finish')+'">Result Page</button></div><button type="button" class="nq-arw" data-act="next" aria-label="Следующий вопрос">›</button></div>';
+  h += '<h2 class="nq-h">Question '+(S.i+1)+'</h2>';
+  h += '<p class="nq-meta">'+esc(L.wk+" · "+L.short+" · "+q.s)+'</p>';
+  h += '<p class="nq-q">'+esc(q.q)+'</p>';
+  if (k==="multi") h += '<p class="hint">Choose '+rightOf(q).length+'.</p>';
   if (k==="order") h += '<p class="hint">Нажимай элементы по порядку. Нажми на элемент сверху, чтобы убрать его.</p>';
-  if (k==="match") h += '<p class="hint">Выбери пару для каждой строки</p>';
+  if (k==="match") h += '<p class="hint">Выбери пару для каждой строки.</p>';
 
   if (k==="single" || k==="multi"){
     const r = rightOf(q);
-    h += '<div class="opts">'+opts.map((o,i)=>{
-      let c = "opt";
-      if (locked){ if (r.includes(o)) c+=" ok"; else if (ans.includes(i)) c+=" bad"; }
-      else if (ans.includes(i)) c+=" sel";
-      return '<button type="button" class="'+c+'" data-act="opt" data-i="'+i+'"'+(locked?' disabled':'')+'><span class="L">'+LETTERS[i]+'</span><span class="'+(q.code?'code':'')+'">'+esc(o)+'</span></button>';
+    h += '<div class="nq-opts">'+opts.map((o,i)=>{
+      const sel = ans.includes(i); let c = "nq-opt", mark = "";
+      if (showKey){ if (r.includes(o)){ c += sel?" ok":" ok miss"; mark = "✓"; } else if (sel){ c += " bad"; mark = "✕"; } }
+      else if (sel){ c += " sel"; mark = "✓"; }
+      return '<button type="button" class="'+c+'" data-act="opt" data-i="'+i+'" aria-pressed="'+sel+'"'+(locked?' disabled':'')+'><span class="nq-mark" aria-hidden="true">'+mark+'</span><span class="nq-txt'+(q.code?' code':'')+'">'+esc(o)+'</span></button>';
     }).join("")+'</div>';
   } else if (k==="order"){
     h += '<div class="built">'+(ans.length?ans.map((oi,j)=>'<button type="button" class="piece" data-act="unbuild" data-j="'+j+'"'+(locked?' disabled':'')+'><span class="k">'+(j+1)+'</span>'+esc(opts[oi])+'</button>').join(""):'<span class="empty">Здесь будет твой порядок</span>')+'</div>';
@@ -971,67 +1017,65 @@ function renderRun(){
     h += '<div class="bank">'+(left.length?left.map(i=>'<button type="button" class="piece" data-act="build" data-i="'+i+'"'+(locked?' disabled':'')+'>'+esc(opts[i])+'</button>').join(""):'<span class="empty">Все элементы расставлены</span>')+'</div>';
   } else if (k==="match"){
     h += q.pairs.map((p,j)=>{
-      const st = locked ? (ans[j]===p[1]?" ok":" bad") : "";
+      const st = showKey ? (ans[j]===p[1]?" ok":" bad") : "";
       return '<div class="mrow'+st+'"><label for="m'+j+'">'+esc(p[0])+'</label><select id="m'+j+'" data-j="'+j+'"'+(locked?' disabled':'')+'><option value="">Выбери…</option>'+opts.map(r=>'<option'+(ans[j]===r?' selected':'')+'>'+esc(r)+'</option>').join("")+'</select></div>';
     }).join("");
   }
 
-  if (locked){
+  if (showKey){
     const ok = S.res[S.i];
     let a;
     if (k==="order") a = '<ol class="olist">'+q.items.map(t=>'<li>'+esc(t)+'</li>').join("")+'</ol>';
     else if (k==="match") a = '<ol class="olist">'+q.pairs.map(p=>'<li>'+esc(p[0])+' → <b>'+esc(p[1])+'</b></li>').join("")+'</ol>';
     else a = '<b class="'+(q.code?'code':'')+'">'+esc(rightOf(q).join(", "))+'</b>';
-    h += '<div class="fb'+(ok?'':' bad')+'" role="status"><span class="t">'+(ok?'Верно':'Неверно')+'</span>'+(ok?'':'Правильно: ')+a+'<p>'+esc(q.e)+'</p></div>';
+    h += '<div class="fb'+(ok?'':' bad')+'" role="status"><span class="t">'+(ok?'Верно':(isAnswered(q,ans)?'Неверно':'Нет ответа'))+'</span>'+(ok?'':'Правильно: ')+a+'<p>'+esc(q.e)+'</p></div>';
   }
 
-  h += '<div class="actions">';
-  if (S.mode==="practice"){
-    if (locked) h += '<button type="button" class="btn" data-act="next">'+(S.i+1<N?'Следующий':'Итог')+'</button>';
-    else {
-      if (k!=="single"){
-        const ready = k==="match" ? ans.every(Boolean) : (k==="order" ? ans.length===q.items.length : ans.length>0);
-        h += '<button type="button" class="btn" data-act="check"'+(ready?'':' disabled')+'>Проверить</button>';
-      }
-      h += '<button type="button" class="btn ghost" data-act="skip">Не знаю</button>';
-    }
-    h += '<button type="button" class="btn ghost" data-act="finish">Закончить</button>';
-  } else {
-    if (S.i>0) h += '<button type="button" class="btn ghost" data-act="prev">← Назад</button>';
-    if (S.i+1<N) h += '<button type="button" class="btn" data-act="next">Далее →</button>';
-    h += '<button type="button" class="btn '+(S.i+1<N?'ghost':'')+'" data-act="finish">Завершить тест</button>';
+  h += '<div class="nq-nav"><button type="button" class="nq-arw wide" data-act="prev"'+(S.i===0?' disabled':'')+'>‹ Назад</button>';
+  if (S.mode==="practice" && !locked){
+    const ready = k==="match" ? ans.every(Boolean) : (k==="order" ? ans.length===q.items.length : ans.length>0);
+    h += '<button type="button" class="nq-pill" data-act="check"'+(ready?'':' disabled')+'>Submit</button>';
   }
-  h += '</div>';
+  h += '<button type="button" class="nq-arw wide" data-act="next">'+(S.i+1<N?'Далее ›':(S.done?'К результату ›':'Result Page ›'))+'</button></div>';
   if (S.confirm){
-    const left = N - answered;
+    const left = S.list.filter((qq,j)=>!isAnswered(qq,S.ans[j])).length;
     h += '<div class="warnbar">Без ответа: '+left+'. Всё равно завершить? <div class="row" style="margin-top:8px"><button type="button" class="btn small" data-act="finish-yes">Да, завершить</button><button type="button" class="btn ghost small" data-act="finish-no">Вернуться</button></div></div>';
   }
   box.innerHTML = h;
+  const cur = box.querySelector(".nq-tab.cur"); const tabs = box.querySelector(".nq-tabs");
+  if (cur && tabs) tabs.scrollLeft = Math.max(0, cur.offsetLeft - tabs.clientWidth/2 + cur.clientWidth/2);
 }
 
 $("#run").addEventListener("click", e=>{
-  const t = e.target.closest("[data-act]"); if (!t || !S || S.done) { const r=e.target.closest("[data-res]"); if(r) resultsAction(r.dataset.res); return; }
+  const r = e.target.closest("[data-res]");
+  if (r){ e.preventDefault(); resultsAction(r.dataset.res); return; }
+  const t = e.target.closest("[data-act]"); if (!t || !S) return;
   const q = S.list[S.i], k = kind(q), ans = S.ans[S.i];
-  const locked = S.mode==="practice" && S.res[S.i]!==null;
+  const locked = keyShown(S.i);
+  const N = S.list.length;
   switch (t.dataset.act){
+    case "go": S.i = +t.dataset.k; S.confirm=false; break;
     case "opt": {
       if (locked) return;
       const i = +t.dataset.i;
-      if (k==="single"){ S.ans[S.i]=[i]; if (S.mode==="practice") return check(); }
+      if (k==="single") S.ans[S.i]=[i];
       else { const p = ans.indexOf(i); p>=0 ? ans.splice(p,1) : ans.push(i); }
       break;
     }
     case "build": if (!locked) ans.push(+t.dataset.i); break;
     case "unbuild": if (!locked) ans.splice(+t.dataset.j,1); break;
     case "check": return check();
-    case "skip": S.res[S.i]=false; wrong.add(q.id); saveAll(); break;
-    case "next": if (S.i+1<S.list.length){ S.i++; S.confirm=false; window.scrollTo({top:0}); } else return finishSession(); break;
-    case "prev": if (S.i>0){ S.i--; S.confirm=false; window.scrollTo({top:0}); } break;
+    case "prev": if (S.i>0){ S.i--; S.confirm=false; } break;
+    case "next":
+      if (S.i+1<N){ S.i++; S.confirm=false; break; }
+      if (S.done){ S.review=false; renderRun(); return; }
+      /* falls through to finish on the last question */
     case "finish": {
-      const unanswered = S.mode==="exam" ? S.list.filter((qq,j)=>!isAnswered(qq,S.ans[j])).length : 0;
-      if (unanswered>0 && !S.confirm){ S.confirm=true; break; }
+      const unanswered = S.list.filter((qq,j)=>!isAnswered(qq,S.ans[j])).length;
+      if (S.mode==="exam" && unanswered>0 && !S.confirm){ S.confirm=true; break; }
       return finishSession();
     }
+    case "results": S.review=false; renderRun(); window.scrollTo({top:0}); return;
     case "finish-yes": return finishSession();
     case "finish-no": S.confirm=false; break;
   }
@@ -1054,8 +1098,10 @@ function finishSession(){
   if (S.mode==="exam"){
     S.res = S.list.map((q,j)=>evalQ(q,S.ans[j],S.opts[j]));
     S.list.forEach((q,j)=>{ S.res[j] ? wrong.delete(q.id) : wrong.add(q.id); });
+  } else {
+    S.list.forEach((q,j)=>{ if (S.res[j]===null && isAnswered(q,S.ans[j])){ S.res[j]=evalQ(q,S.ans[j],S.opts[j]); S.res[j]?wrong.delete(q.id):wrong.add(q.id); } });
   }
-  S.done = true;
+  S.done = true; S.review = false; S.confirm = false;
   const counted = S.mode==="exam" ? S.list.length : S.res.filter(x=>x!==null).length;
   const right = S.res.filter(x=>x===true).length;
   S.score = {right, counted, pct: counted?Math.round(right/counted*100):0};
@@ -1064,33 +1110,38 @@ function finishSession(){
   renderRun(); window.scrollTo({top:0});
 }
 function renderResults(){
-  const sc = S.score, N = S.list.length;
-  const items = S.list.map((q,j)=>({q,j,ok:S.res[j]})).filter(x=>x.ok!==null);
-  const bad = items.filter(x=>!x.ok), good = items.filter(x=>x.ok);
-  let h = '<p class="label">'+(S.mode==="exam"?"Результат пробного теста":"Итог квиза")+'</p><h2 class="runtitle">'+esc(S.title)+'</h2>';
-  h += '<p class="big">'+sc.right+' / '+sc.counted+'</p><p>'+sc.pct+'% верно'+(S.mode==="exam"?' · примерно '+Math.round(sc.pct)+' баллов из 100':'')+(sc.counted<N?' · отвечено '+sc.counted+' из '+N:'')+'</p>';
-  h += '<div class="actions"><button type="button" class="btn" data-res="again">Ещё раз</button>'+(bad.length?'<button type="button" class="btn ghost" data-res="errors">Повторить ошибки ('+bad.length+')</button>':'')+'<a class="btn ghost" href="#course">К темам</a></div>';
-  const card = (x)=>'<div class="rev'+(x.ok?'':' bad')+'"><div class="qq">'+esc(x.q.q)+'</div>'+(S.mode==="exam"||!x.ok?'<div class="yy">Твой ответ: '+esc(userText(x.q,S.ans[x.j],S.opts[x.j]))+'</div>':'')+'<div class="aa'+(x.q.code?' code':'')+'"><b>'+(x.ok?'✓ ':'✗ Правильно: ')+'</b>'+esc(answerText(x.q))+'</div><div class="ee">'+esc(x.q.e)+'</div></div>';
-  if (bad.length) h += '<h2>Ошибки</h2>'+bad.map(card).join("");
-  if (S.mode==="exam" && good.length) h += '<h2>Верно</h2>'+good.map(card).join("");
+  const sc = S.score, N = S.list.length, pct = sc.pct, passed = pct>=70;
+  const len = Math.PI*90, bad = S.res.filter(x=>x===false).length;
+  let h = '<div class="nq-title"><span>'+esc(S.title)+'</span></div>';
+  h += '<div class="nq-top"><div class="nq-tabs">'+S.list.map((q,j)=>'<button type="button" class="nq-tab '+(S.res[j]===null?'':(S.res[j]?'ok':'bad'))+'" data-res="q'+j+'">Q'+(j+1)+'</button>').join("")+'<span class="nq-res">Result Page</span></div></div>';
+  h += '<div class="nq-result"><svg viewBox="0 0 200 112" width="260" aria-hidden="true"><path class="g-bg" d="M14 100 A86 86 0 0 1 186 100"/><path class="g-fg" d="M14 100 A86 86 0 0 1 186 100" style="stroke-dasharray:'+(len*86/90*pct/100).toFixed(1)+' 400"/></svg>';
+  h += '<div class="g-pct">'+pct+'%</div>';
+  h += '<p>You have scored <b>'+pct+'%</b>. <span class="sub">('+sc.right+' из '+sc.counted+(sc.counted<N?', отвечено '+sc.counted+' из '+N:'')+')</span></p>';
+  h += '<p>'+(passed?'Congratulations, you have passed the exam.':'You did not pass. Review the questions and try again.')+'</p>';
+  h += '<p><button type="button" class="nq-pill" data-res="again">Reset</button></p>';
+  h += '<p><a href="#" class="nq-link" data-res="review">Review Assessment</a></p>';
+  h += '<div class="row" style="justify-content:center;margin-top:6px">'+(bad?'<button type="button" class="btn ghost small" data-res="errors">Повторить ошибки ('+bad+')</button>':'')+'<a class="btn ghost small" href="#course">К темам</a></div></div>';
   $("#run").innerHTML = h;
 }
 function resultsAction(a){
   if (!S) return;
-  if (a==="again") startSession(S.cfg);
-  if (a==="errors"){ const list = S.list.filter((q,j)=>S.res[j]===false); startSession({title:"Ошибки: "+S.title, list, mode:"practice"}); }
+  if (a==="again") return startSession(S.cfg);
+  if (a==="errors"){ const list = S.list.filter((q,j)=>S.res[j]===false); return startSession({title:"Ошибки: "+S.title, list, mode:"practice"}); }
+  if (a==="review"){ S.review = true; S.i = 0; renderRun(); window.scrollTo({top:0}); return; }
+  if (a[0]==="q"){ S.review = true; S.i = +a.slice(1); renderRun(); window.scrollTo({top:0}); }
 }
 
 document.addEventListener("keydown", e=>{
-  if ($("#v-run").hidden || !S || S.done) return;
+  if ($("#v-run").hidden || !S || (S.done && !S.review)) return;
   const tag = e.target.tagName; if (tag==="INPUT"||tag==="SELECT"||tag==="TEXTAREA") return;
   const q=S.list[S.i], k=kind(q);
   if (/^[1-8]$/.test(e.key) && (k==="single"||k==="multi")){
-    const b = document.querySelector('.opt[data-i="'+(+e.key-1)+'"]'); if (b && !b.disabled){ b.click(); }
+    const b = document.querySelector('.nq-opt[data-i="'+(+e.key-1)+'"]'); if (b && !b.disabled) b.click();
   } else if (e.key==="Enter"){
-    const b = document.querySelector('[data-act="check"]:not([disabled])') || document.querySelector('[data-act="next"]');
+    const b = document.querySelector('[data-act="check"]:not([disabled])') || document.querySelector('.nq-nav [data-act="next"]');
     if (b){ e.preventDefault(); b.click(); }
-  }
+  } else if (e.key==="ArrowRight"){ const b=document.querySelector('.nq-nav [data-act="next"]'); if(b) b.click(); }
+  else if (e.key==="ArrowLeft"){ const b=document.querySelector('.nq-nav [data-act="prev"]'); if(b && !b.disabled) b.click(); }
 });
 
 /* ===================== FREE TRAINING ===================== */
