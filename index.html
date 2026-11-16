@@ -157,6 +157,14 @@ pre.mono{background:var(--surface);border:1px solid var(--line);border-radius:8p
 .item .aa{font-weight:600;margin-top:2px}
 .item .ee{font-size:14px;margin-top:4px}
 .empty{color:var(--muted);font-size:14px}
+.plan{padding-left:22px;max-width:68ch}
+.plan li{margin:8px 0}
+.links{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.lk{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);text-decoration:none}
+.lk:hover{border-color:var(--accent)}
+.lk b{font-weight:600}
+.lk span{font-size:13px;color:var(--muted);text-align:right}
+.lk.top{border-color:var(--accent);background:var(--accent-soft)}
 @media (prefers-reduced-motion: no-preference){.progress>i{transition:width .25s ease}}
 @media (max-width:420px){.pin{font-size:11px}.wire{font-size:10px}}
 </style>
@@ -167,6 +175,7 @@ pre.mono{background:var(--surface);border:1px solid var(--line);border-radius:8p
     <p class="brand">COA — подготовка к финалу</p>
     <nav class="tabs" role="tablist" aria-label="Разделы">
       <button class="tab" role="tab" data-go="course" id="t-course">Курс</button>
+      <button class="tab" role="tab" data-go="netacad" id="t-netacad">Банк NetAcad</button>
       <button class="tab" role="tab" data-go="train" id="t-train">Тренировка</button>
       <button class="tab" role="tab" data-go="cheat" id="t-cheat">Шпаргалка</button>
     </nav>
@@ -177,6 +186,29 @@ pre.mono{background:var(--surface);border:1px solid var(--line);border-radius:8p
   <section id="v-course"></section>
   <section id="v-lesson" hidden></section>
   <section id="v-run" hidden><div class="panel" id="run"></div></section>
+  <section id="v-netacad" hidden>
+    <h1>Финал: банк NetAcad</h1>
+    <div class="panel hero">
+      <p><b>Преподаватель:</b> «готовьтесь по Нетакаду полностью, все вопросы оттуда, банк около 300 вопросов».</p>
+      <p class="sub" style="margin:0">Final Test: 40 вопросов из этого банка, 50 минут, одна попытка, на компьютере.</p>
+    </div>
+    <h2>План подготовки</h2>
+    <ol class="plan">
+      <li><b>Пройди composite-тест по всем 14 модулям</b> (350 вопросов) по частям. Начни с модулей 10–14: Windows, Linux и macOS, безопасность, IT-профессионал. В квизах LMS их было меньше всего. Потом переходи к модулям 1–9.</li>
+      <li><b>Разбирай ошибки сразу</b> по объяснению под вопросом и выписывай то, чего не знал.</li>
+      <li><b>Перепройди экзамены в самом NetAcad.</b> У экзаменов модулей, чекпоинтов и Practice Final попытки не ограничены. Короткие квизы «Check Your Understanding» внутри модулей идут без оценки.</li>
+      <li><b>Повтори темы на этом сайте.</b> Многие вопросы из квизов LMS, мидтерма и эндтерма взяты из того же банка.</li>
+    </ol>
+    <div class="row" style="margin-top:12px"><a class="btn" href="https://www.netacad.com/dashboard" target="_blank" rel="noopener">Открыть NetAcad</a></div>
+    <h2>Тесты с ответами</h2>
+    <p class="sub">Онлайн-тесты по IT Essentials 8 на сайте ITExamAnswers. Это сторонний сайт, не Cisco. Ссылки открываются в новой вкладке.</p>
+    <p class="label">Главное</p>
+    <div class="links" id="lk-main"></div>
+    <p class="label" style="margin-top:18px">Чекпоинты</p>
+    <div class="links" id="lk-cp"></div>
+    <p class="label" style="margin-top:18px">По модулям</p>
+    <div class="links" id="lk-mod"></div>
+  </section>
   <section id="v-train" hidden>
     <h1>Свободная тренировка</h1>
     <p class="sub">Выбери темы и откуда брать вопросы. Ответ и объяснение видны сразу.</p>
@@ -531,7 +563,7 @@ rwx r-x r-x   →  7 5 5  →  755</pre>
 </ul>`},
 
 ite:{wk:"Финал",quiz:"IT Essentials 8",short:"IT Essentials",block:"fin",title:"IT Essentials 8: безопасность, ноутбуки, профессия и обзор модулей",html:`
-<p class="lead">Допуск к финалу — сертификат IT Essentials 8. Мидтерм брал вопросы из модулей 1, 2, 5, 6 и 8, поэтому на финале могут быть темы из всех 14 модулей. Здесь то, чего не было в темах по неделям.</p>
+<p class="lead">Допуск к финалу — сертификат IT Essentials 8. Преподаватель сказал, что все вопросы финала — из банка NetAcad, около 300 вопросов, поэтому темы будут из всех 14 модулей. Здесь то, чего не было в темах по неделям. Сами тесты банка — во вкладке <a href="#netacad">«Банк NetAcad»</a>.</p>
 <h3>1. Безопасность (модуль 13)</h3>
 <div class="tblwrap"><table class="tbl">
 <tr><td>Virus</td><td>прикрепляется к файлу, распространяется через почту и файлы. По ключу эндтерма кейлоггер по почте — тоже virus</td></tr>
@@ -592,7 +624,7 @@ const BLOCKS = [
    exam:{key:"mid",title:"Пробный мидтерм",n:25,min:30,desc:"25 вопросов по неделям 2–5, 30 минут. Настоящий мидтерм шёл по модулям IT Essentials 1, 2, 5, 6, 8 и практикам."}},
   {id:"end",title:"До эндтерма",sub:"2-я аттестация · недели 6–9",lessons:["l5","l6","l7","l8"],
    exam:{key:"end",title:"Пробный эндтерм",n:20,min:30,desc:"20 вопросов по неделям 6–9 и с настоящего эндтерма, 30 минут. Частые ошибки на эндтерме: partition, 651 и mv вместо cp."}},
-  {id:"fin",title:"Финал",sub:"Final Test: 40 вопросов · 50 минут · 1 попытка · на компьютере",lessons:["ite"],
+  {id:"fin",title:"Финал",sub:"Final Test: 40 вопросов из банка NetAcad (около 300) · 50 минут · 1 попытка. Главная подготовка — во вкладке «Банк NetAcad»",lessons:["ite"],
    exam:{key:"fin",title:"Пробный финал",n:40,min:50,desc:"40 вопросов из всего курса, 50 минут, как на настоящем Final Test."}}
 ];
 
@@ -798,10 +830,10 @@ function examPool(key){
 }
 
 /* ===================== VIEWS & ROUTING ===================== */
-const VIEWS = ["course","lesson","run","train","cheat"];
+const VIEWS = ["course","lesson","run","train","cheat","netacad"];
 function showView(v){
   VIEWS.forEach(x=>{ $("#v-"+x).hidden = x!==v; });
-  const tab = (v==="train"||v==="cheat") ? v : "course";
+  const tab = (v==="train"||v==="cheat"||v==="netacad") ? v : "course";
   document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected", t.dataset.go===tab));
   if (v==="course") renderCourse();
   if (v==="train") renderTrain();
@@ -810,7 +842,7 @@ function showView(v){
 function route(){
   const h = location.hash.slice(1) || "course";
   if (h.indexOf("lesson-")===0 && LESSONS[h.slice(7)]) { renderLesson(h.slice(7)); showView("lesson"); }
-  else if (h==="train" || h==="cheat") showView(h);
+  else if (h==="train" || h==="cheat" || h==="netacad") showView(h);
   else if (h==="quiz" && S) showView("run");
   else showView("course");
   window.scrollTo({top:0});
@@ -836,8 +868,8 @@ function examCard(x){
 function renderCourse(){
   const read = ORDER.filter(l=>readSet.has(l)).length;
   let h = '<h1>Курс COA по неделям</h1><p class="sub">Читай тему недели, проходи её квиз, потом пробный тест блока. Вопросы — из квизов в LMS, мидтерма, эндтерма и IT Essentials 8.</p>';
-  h += '<div class="panel hero"><p><b>Final Test</b>: 40 вопросов, 50 минут, одна попытка, на компьютере.</p><p class="sub" style="margin:0">Прочитано тем: '+read+' из '+ORDER.length+' · Ошибок на повтор: '+wrong.size+'</p>'+
-       '<div class="row" style="margin-top:10px"><button type="button" class="btn" data-exam="fin">Пробный финал</button><button type="button" class="btn ghost" data-wrong="1"'+(wrong.size?'':' disabled')+'>Повторить ошибки ('+wrong.size+')</button></div></div>';
+  h += '<div class="panel hero"><p><b>Final Test</b>: 40 вопросов из банка NetAcad IT Essentials 8 (около 300 вопросов), 50 минут, одна попытка, на компьютере.</p><p class="sub" style="margin:0">Прочитано тем: '+read+' из '+ORDER.length+' · Ошибок на повтор: '+wrong.size+'</p>'+
+       '<div class="row" style="margin-top:10px"><a class="btn" href="#netacad">План и тесты NetAcad</a><button type="button" class="btn ghost" data-exam="fin">Пробный финал</button><button type="button" class="btn ghost" data-wrong="1"'+(wrong.size?'':' disabled')+'>Повторить ошибки ('+wrong.size+')</button></div></div>';
   BLOCKS.forEach(B=>{
     h += '<h2>'+esc(B.title)+'</h2><p class="sub">'+esc(B.sub)+'</p><div class="grid">'+B.lessons.map(lessonCard).join("")+examCard(B.exam)+'</div>';
   });
@@ -1106,6 +1138,22 @@ function renderList(term){
 }
 $("#search").addEventListener("input", e=>renderList(e.target.value));
 renderList("");
+
+/* ===================== NETACAD BANK LINKS ===================== */
+const IXA = "https://itexamanswers.net/it-essentials-v8-ite-v6-0-v7-0-";
+const LK_MAIN = [
+  ["Course Final Exam (Composite)","модули 1–14 · 350 вопросов","final-exam-composite-chapters-1-14-test-online.html",true],
+  ["Final Exam","модули 1–9","final-exam-chapters-1-9-test-online.html"],
+  ["Final Exam","модули 10–14","final-exam-chapters-10-14-test-online.html"],
+  ["Practice Final Exam","модули 1–9","practice-final-exam-chapters-1-9-test-online.html"],
+  ["Practice Final Exam","модули 10–14","practice-final-exam-chapters-10-14-test-online.html"]
+];
+const LK_CP = [["1–4","chapters-1-4-checkpoint-1"],["5–6","chapters-5-6-checkpoint-2"],["7–8","chapters-7-8-checkpoint-3"],["10–11","chapters-10-11-checkpoint-4"],["12–13","chapters-12-13-checkpoint-5"]];
+const MODS = ["Железо ПК и безопасность работы","Сборка ПК","Продвинутое железо","Обслуживание и troubleshooting","Сетевые понятия","Прикладные сети","Ноутбуки и мобильные","Принтеры","Виртуализация и облако","Установка Windows","Настройка Windows","Мобильные ОС, Linux, macOS","Безопасность","IT-профессионал"];
+const lk = (title, sub, href, top) => '<a class="lk'+(top?' top':'')+'" href="'+href+'" target="_blank" rel="noopener"><b>'+esc(title)+'</b><span>'+esc(sub)+'</span></a>';
+$("#lk-main").innerHTML = LK_MAIN.map(x=>lk(x[0],x[1],IXA+x[2],x[3])).join("");
+$("#lk-cp").innerHTML = LK_CP.map(x=>lk("Checkpoint "+x[0],"модули "+x[0],IXA+x[1]+"-test-online.html")).join("");
+$("#lk-mod").innerHTML = MODS.map((m,i)=>lk("Модуль "+(i+1),m,IXA+"chapter-"+(i+1)+"-test-online.html")).join("");
 
 route();
 </script>
