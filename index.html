@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COA Final Trainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: one reading column; course map of week cards → lesson page → quiz runner. Accent = orange of the first T568B pair. */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --ink:#15212c; --muted:#5a6775; --line:#d9e0e6;
+  --accent:#d9701a; --accent-ink:#ffffff; --accent-soft:#fbeedf;
+  --ok:#1d7f47; --ok-bg:#e4f3ea; --bad:#bf3434; --bad-bg:#fae8e8;
+  --font-display:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --font-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f151b; --surface:#17212b; --ink:#e6ecf2; --muted:#9aa8b6; --line:#2a3743;
+    --accent:#f08d35; --accent-ink:#1a1006; --accent-soft:#3a2614;
+    --ok:#53c585; --ok-bg:#15301f; --bad:#ef7070; --bad-bg:#3a1c1d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f151b; --surface:#17212b; --ink:#e6ecf2; --muted:#9aa8b6; --line:#2a3743;
+  --accent:#f08d35; --accent-ink:#1a1006; --accent-soft:#3a2614;
+  --ok:#53c585; --ok-bg:#15301f; --bad:#ef7070; --bad-bg:#3a1c1d;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 56px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.head-in{max-width:760px;margin:0 auto;padding:10px 16px 0}
+.brand{font-family:var(--font-display);font-weight:700;font-size:20px;margin:0}
+.tabs{display:flex;gap:2px;overflow-x:auto}
+.tab{appearance:none;border:0;background:none;color:var(--muted);font:600 15px var(--font-body);padding:8px 12px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+section[hidden]{display:none}
+h1{font-family:var(--font-display);font-weight:700;font-size:28px;line-height:1.2;margin:18px 0 6px;text-wrap:balance}
+h2{font-family:var(--font-display);font-weight:700;font-size:22px;margin:30px 0 4px;text-wrap:balance}
+.sub{color:var(--muted);font-size:14px;margin:0 0 12px}
+.label{font-size:12px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;margin-top:16px}
+.hero{border-left:4px solid var(--accent)}
+.hero p{margin:4px 0}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(225px,1fr))}
+.lcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.lcard h3{margin:0;font-size:16px;line-height:1.35;text-wrap:balance}
+.lcard .row{margin-top:auto;padding-top:6px}
+.lcard.exam{border-color:var(--accent);background:var(--accent-soft)}
+.stat{display:flex;flex-wrap:wrap;gap:6px}
+.pill{font-size:12px;border-radius:999px;padding:1px 8px;border:1px solid var(--line);color:var(--muted)}
+.pill.good{border-color:var(--ok);color:var(--ok)}
+.pill.warn{border-color:var(--accent);color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{appearance:none;display:inline-block;text-decoration:none;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:10px 16px;font:600 15px var(--font-body);cursor:pointer;line-height:1.2}
+.btn.small{padding:7px 12px;font-size:14px}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn:disabled{opacity:.45;cursor:default}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 11px;font:500 14px var(--font-body);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip .n{opacity:.7;font-variant-numeric:tabular-nums;margin-left:4px}
+/* lesson */
+.back{display:inline-block;margin-top:14px;font-size:14px;text-decoration:none}
+.lesson{max-width:68ch}
+.lesson h3{font-size:18px;margin:26px 0 8px}
+.lesson p,.lesson li{margin:6px 0}
+.lesson ul,.lesson ol{padding-left:22px}
+.lead{font-size:17px}
+.note{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 12px;border-radius:6px;margin:14px 0}
+.tbl{border-collapse:collapse;width:100%;font-size:15px;margin:8px 0}
+.tbl td{padding:6px 8px 6px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl td:first-child{font-weight:600;white-space:nowrap;padding-right:14px}
+.tbl tr:last-child td{border-bottom:0}
+.tblwrap{overflow-x:auto}
+code,.mono{font-family:var(--font-mono);font-size:14px}
+pre.mono{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;line-height:1.6;margin:10px 0}
+.wires{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;margin:10px 0 4px;max-width:520px}
+.wire{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;text-align:center;color:var(--muted)}
+.wire i{display:block;width:100%;height:64px;border-radius:4px;border:1px solid var(--line)}
+.wire b{font-family:var(--font-mono);color:var(--ink);font-size:13px}
+.pins{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;max-width:520px;margin:10px 0}
+.pin{border:1px solid var(--line);border-radius:6px;padding:6px 4px;text-align:center;font-size:12px;line-height:1.3}
+.pin b{display:block;font-family:var(--font-mono);font-size:14px}
+.p-hdd{background:rgba(47,111,214,.16)} .p-pled{background:rgba(47,158,68,.16)} .p-rst{background:rgba(217,112,26,.18)} .p-psw{background:rgba(191,52,52,.16)} .p-nc{opacity:.55}
+.flow{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;padding:0;list-style:none}
+.flow li{border:1px solid var(--line);border-radius:6px;padding:4px 9px;font-size:14px;background:var(--surface);margin:0}
+.flow li b{font-family:var(--font-mono);color:var(--muted);margin-right:5px}
+.flow li.hot{border-color:var(--accent);background:var(--accent-soft)}
+/* runner */
+.runhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.runtitle{margin:0 0 8px;font-size:20px}
+.timer{font:600 22px var(--font-mono);font-variant-numeric:tabular-nums;padding:4px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.timer.low{color:var(--bad);border-color:var(--bad)}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:6px 0 14px}
+.progress>i{display:block;height:100%;background:var(--accent);width:0}
+.meta{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.badge{font-size:12px;border-radius:4px;padding:2px 7px;background:var(--accent-soft);color:var(--ink)}
+.badge.src{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.q{font-size:18px;font-weight:500;margin:0 0 6px;text-wrap:pretty}
+.hint{font-size:13px;color:var(--accent);font-weight:600;margin:0 0 12px}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:10px 12px;font:400 15px var(--font-body);cursor:pointer}
+.opt .L{flex:0 0 26px;height:26px;border-radius:6px;border:1px solid var(--line);display:grid;place-items:center;font:600 13px var(--font-mono);color:var(--muted)}
+.opt.sel{border-color:var(--accent)}
+.opt.sel .L{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.opt.ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.ok .L{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.bad{border-color:var(--bad);background:var(--bad-bg)}
+.opt.bad .L{background:var(--bad);border-color:var(--bad);color:#fff}
+.opt[disabled]{cursor:default}
+.code{font-family:var(--font-mono);font-size:14px;word-break:break-word}
+.fb{margin-top:14px;border-radius:8px;padding:12px 14px;border-left:4px solid var(--ok);background:var(--ok-bg)}
+.fb.bad{border-left-color:var(--bad);background:var(--bad-bg)}
+.fb .t{display:block;font-weight:700;margin-bottom:4px}
+.fb p{margin:6px 0 0}
+.actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.warnbar{margin-top:12px;padding:10px 12px;border-radius:8px;background:var(--accent-soft);border:1px solid var(--accent)}
+.bank,.built{display:flex;flex-wrap:wrap;gap:6px;min-height:44px;padding:8px;border:1px dashed var(--line);border-radius:8px}
+.built{border-style:solid;margin-bottom:8px}
+.piece{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;padding:6px 10px;font:500 14px var(--font-body);cursor:pointer;text-align:left}
+.built .piece{border-color:var(--accent)}
+.piece .k{font:600 12px var(--font-mono);color:var(--muted);margin-right:6px}
+.mrow{display:grid;gap:4px;margin-bottom:10px}
+.mrow select{font:15px var(--font-body);padding:8px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);width:100%}
+.mrow.ok select{border-color:var(--ok)} .mrow.bad select{border-color:var(--bad)}
+.olist{margin:6px 0 0;padding-left:22px}
+.big{font-family:var(--font-display);font-size:46px;font-weight:700;margin:2px 0;font-variant-numeric:tabular-nums}
+.rev{border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:8px;padding:10px 12px;margin-bottom:8px;background:var(--surface)}
+.rev.bad{border-left-color:var(--bad)}
+.rev .qq{font-size:15px;font-weight:500}
+.rev .yy{font-size:14px;color:var(--muted);margin-top:4px}
+.rev .aa{font-size:14px;margin-top:2px}
+.rev .ee{font-size:14px;margin-top:4px}
+/* cheat */
+.search{width:100%;font:16px var(--font-body);padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.facts{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.fact h3{margin:0 0 6px;font-size:15px}
+.fact table{border-collapse:collapse;width:100%;font-size:14px}
+.fact td{padding:3px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.fact td:first-child{font-family:var(--font-mono);padding-right:10px}
+.fact tr:last-child td{border-bottom:0}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.item .qq{font-size:14px;color:var(--muted)}
+.item .aa{font-weight:600;margin-top:2px}
+.item .ee{font-size:14px;margin-top:4px}
+.empty{color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion: no-preference){.progress>i{transition:width .25s ease}}
+@media (max-width:420px){.pin{font-size:11px}.wire{font-size:10px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="head-in">
+    <p class="brand">COA — подготовка к финалу</p>
+    <nav class="tabs" role="tablist" aria-label="Разделы">
+      <button class="tab" role="tab" data-go="course" id="t-course">Курс</button>
+      <button class="tab" role="tab" data-go="train" id="t-train">Тренировка</button>
+      <button class="tab" role="tab" data-go="cheat" id="t-cheat">Шпаргалка</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="v-course"></section>
+  <section id="v-lesson" hidden></section>
+  <section id="v-run" hidden><div class="panel" id="run"></div></section>
+  <section id="v-train" hidden>
+    <h1>Свободная тренировка</h1>
+    <p class="sub">Выбери темы и откуда брать вопросы. Ответ и объяснение видны сразу.</p>
+    <div class="panel">
+      <p class="label">Темы</p>
+      <div class="chips" id="topicChips"></div>
+      <p class="label" style="margin-top:14px">Откуда вопросы</p>
+      <div class="chips" id="srcChips"></div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="trainStart">Начать</button>
+        <button class="btn ghost" id="trainWrong">Только мои ошибки</button>
+        <button class="btn ghost" id="resetWrong">Очистить ошибки</button>
+      </div>
+      <p class="sub" id="poolInfo" style="margin:10px 0 0"></p>
+    </div>
+  </section>
+  <section id="v-cheat" hidden>
+    <h1>Шпаргалка</h1>
+    <div class="facts" id="facts"></div>
+    <h2>Все вопросы с ответами</h2>
+    <input class="search" id="search" type="search" placeholder="Поиск: port, RAID, chmod, принтер…" aria-label="Поиск по вопросам">
+    <div id="list" style="margin-top:12px"></div>
+  </section>
+</main>
+
+<script>
+/* ===================== LESSONS ===================== */
+const LESSONS = {
+l1:{wk:"Неделя 2",quiz:"Quiz 1",short:"Кабели и железо",block:"mid",title:"Кабель UTP, обжим RJ-45 и основы железа",html:`
+<p class="lead">Практика 1: по двое обжимали прямой кабель по схеме <b>T568B</b> и проверяли его тестером. В Quiz 1 были ещё базовые вопросы про память и накопители.</p>
+<h3>1. Витая пара и другие кабели</h3>
+<ul>
+<li><b>UTP</b> (Unshielded Twisted Pair) — 4 пары скрученных медных проводов без экрана. Скрутка гасит наводки между парами. Обычный кабель Ethernet, до 100 м.</li>
+<li><b>STP</b> — витая пара с экраном (shielded), для мест с помехами.</li>
+<li><b>Fiber optic</b> — передаёт свет, поэтому не боится электромагнитных помех (<b>EMI</b>). Самый быстрый и дальний.</li>
+<li><b>Coaxial</b> — медная жила с экраном, кабельное ТВ и интернет.</li>
+</ul>
+<h3>2. Схема T568B</h3>
+<div class="wires" aria-label="T568B: пины 1–8">
+<div class="wire"><i style="background:repeating-linear-gradient(45deg,#fff 0 6px,#e8761c 6px 12px)"></i><b>1</b>Бел-оранж</div>
+<div class="wire"><i style="background:#e8761c"></i><b>2</b>Оранж</div>
+<div class="wire"><i style="background:repeating-linear-gradient(45deg,#fff 0 6px,#2f9e44 6px 12px)"></i><b>3</b>Бел-зелён</div>
+<div class="wire"><i style="background:#2f6fd6"></i><b>4</b>Синий</div>
+<div class="wire"><i style="background:repeating-linear-gradient(45deg,#fff 0 6px,#2f6fd6 6px 12px)"></i><b>5</b>Бел-синий</div>
+<div class="wire"><i style="background:#2f9e44"></i><b>6</b>Зелёный</div>
+<div class="wire"><i style="background:repeating-linear-gradient(45deg,#fff 0 6px,#8a5a2b 6px 12px)"></i><b>7</b>Бел-корич</div>
+<div class="wire"><i style="background:#8a5a2b"></i><b>8</b>Коричн</div>
+</div>
+<p>Запомни: <b>оранжевая пара первая</b>. В <b>T568A</b> оранжевая и зелёная пары меняются местами. Одна схема на обоих концах — <b>straight-through</b> (прямой кабель, ПК → свитч). A на одном конце и B на другом — <b>crossover</b>.</p>
+<h3>3. Как обжать кабель</h3>
+<ol>
+<li><b>Cut the cable to length</b> — отрезать нужную длину. Это всегда первый шаг.</li>
+<li><b>Strip</b> — снять внешнюю оболочку стриппером (<b>cable stripper</b>).</li>
+<li>Раскрутить пары и разложить жилы по T568B.</li>
+<li>Ровно подрезать концы и вставить в коннектор <b>RJ-45</b> до упора.</li>
+<li><b>Crimp</b> — обжать кримпером (<b>crimper</b>).</li>
+<li><b>Test</b> — проверить тестером (<b>cable tester</b>). Если какой-то пин не прозванивается, например pin 3, коннектор отрезают и обжимают новый.</li>
+</ol>
+<h3>4. Основы железа</h3>
+<div class="tblwrap"><table class="tbl">
+<tr><td>RAM</td><td>оперативная память: отсюда CPU берёт данные для работы, стирается при выключении</td></tr>
+<tr><td>ROM</td><td>постоянная память с прошивкой</td></tr>
+<tr><td>Chipset</td><td>управляет обменом между CPU и остальными компонентами платы</td></tr>
+<tr><td>BIOS / UEFI</td><td>прошивка, которая запускает компьютер</td></tr>
+<tr><td>CMOS</td><td>хранит настройки BIOS, питается от батарейки</td></tr>
+<tr><td>HDD</td><td>магнитные пластины; скорость — RPM (5400, 7200)</td></tr>
+<tr><td>Tape drive</td><td>магнитная лента, для бэкапов</td></tr>
+<tr><td>SSD</td><td>флеш-память, без движущихся частей</td></tr>
+<tr><td>CD / DVD / Blu-ray</td><td>оптические диски, читаются лазером</td></tr>
+</table></div>
+<div class="note">Магнитные носители — <b>HDD</b> и <b>tape drive</b>. Скорость HDD измеряют в <b>revolutions per minute</b>.</div>`},
+
+l2:{wk:"Неделя 3",quiz:"Quiz 2",short:"Принтеры",block:"mid",title:"Принтеры: лазерная печать, установка, настройки",html:`
+<p class="lead">Практика: разобрали лазерный принтер до <b>Laser Unit</b>, открыли его крышку, сфотографировали плату (PCB), собрали обратно и напечатали тестовую страницу.</p>
+<h3>1. Типы принтеров</h3>
+<div class="tblwrap"><table class="tbl">
+<tr><td>Laser</td><td>тонер и фотобарабан (drum); быстрый, для офиса</td></tr>
+<tr><td>Inkjet</td><td>чернила через сопла; скорость зависит от выбранного качества изображения</td></tr>
+<tr><td>Thermal</td><td>печатает нагревом на термобумаге: чеки, этикетки</td></tr>
+<tr><td>Impact (dot matrix)</td><td>бьёт иголками через красящую ленту (ribbon); печатает многослойные бланки</td></tr>
+</table></div>
+<h3>2. Семь шагов лазерной печати</h3>
+<ol class="flow">
+<li><b>1</b>Processing</li><li><b>2</b>Charging</li><li><b>3</b>Exposing</li><li class="hot"><b>4</b>Developing</li><li><b>5</b>Transferring</li><li><b>6</b>Fusing</li><li><b>7</b>Cleaning</li>
+</ol>
+<ul>
+<li><b>Processing</b> — изображение формируется в памяти принтера.</li>
+<li><b>Charging</b> — барабан равномерно заряжается.</li>
+<li><b>Exposing</b> — лазер рисует на барабане скрытое изображение (latent image).</li>
+<li><b>Developing</b> — тонер прилипает к latent image на барабане. Это частый вопрос.</li>
+<li><b>Transferring</b> — тонер переходит с барабана на бумагу.</li>
+<li><b>Fusing</b> — фьюзер нагревом и давлением запекает тонер в бумагу.</li>
+<li><b>Cleaning</b> — с барабана счищают остатки тонера и заряда.</li>
+</ul>
+<h3>3. Части лазерного принтера</h3>
+<p><b>Laser Unit</b> (scanner unit) — лазер с вращающимся зеркалом. <b>Drum</b> — фотобарабан. <b>Toner cartridge</b> — картридж. <b>Fuser</b> — нагреватель. <b>PSU</b> — блок питания. <b>PCB</b> — плата управления.</p>
+<h3>4. Установка и общий доступ</h3>
+<ul>
+<li>При прямом подключении сначала ставят <b>драйвер</b>, а потом подключают принтер.</li>
+<li>Сетевой принтер не появился в списке → <b>добавить вручную по IP-адресу</b>.</li>
+<li>После установки печатают <b>test page</b>.</li>
+<li><b>Networked MFD</b> (многофункциональное устройство в сети) сканирует документ и отправляет его по почте.</li>
+<li>Риск общего принтера — <b>data privacy</b>: документы могут увидеть чужие люди.</li>
+</ul>
+<h3>5. Настройки печати</h3>
+<div class="tblwrap"><table class="tbl">
+<tr><td>Grayscale printing</td><td>только чёрный в разных оттенках</td></tr>
+<tr><td>Paper orientation</td><td>landscape или portrait</td></tr>
+<tr><td>Collate</td><td>печатать многостраничный документ комплектами</td></tr>
+<tr><td>Print layout</td><td>normal, banner, booklet, poster</td></tr>
+<tr><td>Duplex</td><td>двусторонняя печать</td></tr>
+</table></div>
+<h3>6. Типичные проблемы</h3>
+<div class="tblwrap"><table class="tbl">
+<tr><td>Пустые страницы</td><td>закончился тонер → заменить картридж</td></tr>
+<tr><td>Тонер смазывается</td><td>не работает fuser</td></tr>
+<tr><td>Повторяющиеся пятна</td><td>барабан или его очистка</td></tr>
+<tr><td>Замятие бумаги</td><td>путь бумаги, ролики</td></tr>
+</table></div>`},
+
+l3:{wk:"Неделя 4",quiz:"Quiz 3",short:"Сборка ПК",block:"mid",title:"Сборка ПК: плата, память, слоты, F_PANEL",html:`
+<p class="lead">Практика: разбирали и собирали системный блок и подключали все компоненты на свои места.</p>
+<h3>1. Материнская плата и корпус</h3>
+<ul>
+<li>Форм-фактор платы (<b>ATX, microATX, Mini-ITX</b>) сильнее всего влияет на выбор корпуса и блока питания.</li>
+<li>Плату ставят на <b>standoffs</b> — стойки, чтобы она не касалась металла корпуса. Сзади ставят заглушку разъёмов (I/O shield).</li>
+<li>Блок питания крепят к корпусу <b>винтами</b> (screws). Диски ставят в <b>drive bay</b>.</li>
+</ul>
+<h3>2. Память</h3>
+<ul>
+<li><b>DIMM</b> — для ПК, <b>SODIMM</b> — для ноутбуков. Поколения: DDR4, DDR5.</li>
+<li><b>Buffered (registered)</b> и ECC-память ставят в <b>серверы</b>.</li>
+</ul>
+<h3>3. Слоты расширения</h3>
+<ul>
+<li><b>PCIe</b> бывает x1, x4, x8 и x16. Это последовательная шина (serial): данные идут бит за битом по линиям. Видеокарту ставят в PCIe x16.</li>
+<li>PCI и AGP — старые параллельные слоты.</li>
+<li>Мощной видеокарте нужно дополнительное питание от БП: <b>6- или 8-pin</b> разъёмы, иногда два 8-pin.</li>
+</ul>
+<h3>4. Разъёмы блока питания</h3>
+<div class="tblwrap"><table class="tbl">
+<tr><td>24-pin ATX</td><td>питание материнской платы</td></tr>
+<tr><td>4/8-pin EPS</td><td>питание процессора</td></tr>
+<tr><td>6/8-pin PCIe</td><td>видеокарта</td></tr>
+<tr><td>SATA power</td><td>диски</td></tr>
+</table></div>
+<h3>5. Front panel (F_PANEL)</h3>
+<div class="pins" aria-label="Разъём F_PANEL">
+<div class="pin p-pled"><b>2</b>PWR LED +</div><div class="pin p-pled"><b>4</b>PWR LED −</div><div class="pin p-psw"><b>6</b>PWR SW</div><div class="pin p-psw"><b>8</b>PWR SW</div><div class="pin p-nc"><b>10</b>ключ</div>
+<div class="pin p-hdd"><b>1</b>HDD LED +</div><div class="pin p-hdd"><b>3</b>HDD LED −</div><div class="pin p-rst"><b>5</b>RESET</div><div class="pin p-rst"><b>7</b>RESET</div><div class="pin p-nc"><b>9</b>—</div>
+</div>
+<p>Нечётный ряд: <b>HDD LED</b> (1/3) и <b>RESET SW</b> (5/7). Чётный ряд: <b>POWER LED</b> (2/4) и <b>POWER SW</b> (6/8). У светодиодов важен плюс и минус, у кнопок — нет.</p>
+<h3>6. Запуск, питание и диски</h3>
+<ul>
+<li><b>POST</b> проверяет железо при включении. Ошибки сообщаются звуковыми сигналами.</li>
+<li>Сбрасываются дата, время и настройки BIOS → меняют <b>CMOS battery</b>.</li>
+<li><b>UPS</b> даёт питание от батареи при отключении света. Surge protector защищает от скачков.</li>
+<li><b>RAID 0</b> — чередование без защиты. <b>RAID 1</b> — зеркало. <b>RAID 5</b> — с чётностью, от 3 дисков. <b>RAID 10</b> — от 4 дисков.</li>
+<li><b>ESD</b>: перед работой внутри ПК надевают антистатический браслет и отключают питание.</li>
+</ul>`},
+
+l4:{wk:"Неделя 5",quiz:"Quiz 4",short:"Сети",block:"mid",title:"Сети: IP, маска, IPv6, DNS, Wi-Fi, команды",html:`
+<p class="lead">Практика 4: в аудитории собрали LAN, раздали статические IP по списку, подключились к коммутатору и проверили связь через ping.</p>
+<h3>1. Сети и устройства</h3>
+<div class="tblwrap"><table class="tbl">
+<tr><td>LAN</td><td>локальная сеть: дом, офис, аудитория</td></tr>
+<tr><td>WLAN</td><td>беспроводная LAN</td></tr>
+<tr><td>MAN</td><td>город или кампус</td></tr>
+<tr><td>WAN</td><td>соединяет сети в разных городах и странах</td></tr>
+<tr><td>Switch</td><td>соединяет устройства в LAN, пересылает данные по MAC-адресам</td></tr>
+<tr><td>Router</td><td>соединяет разные сети, пересылает пакеты по IP</td></tr>
+<tr><td>Access point</td><td>точка доступа Wi-Fi</td></tr>
+<tr><td>Firewall</td><td>стоит между сетями и защищает их от несанкционированного доступа</td></tr>
+</table></div>
+<h3>2. IPv4 и маска</h3>
+<ul>
+<li>IPv4 — <b>32 бита</b>, 4 октета: 192.168.150.16.</li>
+<li><b>Subnet mask</b> показывает, какая часть адреса — сеть (network ID), а какая — хост (host ID). 255.255.0.0 = /16 = <b>16 бит</b> сети.</li>
+<li>Частные адреса: 10.x.x.x, 172.16–31.x.x, 192.168.x.x. <b>127.0.0.1</b> — loopback (localhost). <b>169.254.x.x</b> — APIPA: DHCP не ответил.</li>
+<li><b>Default gateway</b> — роутер для выхода в другие сети.</li>
+</ul>
+<h3>3. IPv6 и сжатие</h3>
+<p>IPv6 — <b>128 бит</b>, 8 групп по 4 шестнадцатеричные цифры.</p>
+<ol>
+<li>Убрать <b>ведущие</b> нули в каждой группе: 0db8 → db8, 0000 → 0. Нули в конце не трогать: 0aa0 → aa0.</li>
+<li>Одну самую длинную серию нулевых групп заменить на <b>::</b>, и только один раз.</li>
+</ol>
+<pre class="mono">2001:0db8:cafe:0000:0835:0000:0000:0aa0
+2001:db8:cafe:0:835:0:0:aa0     ← правило 1
+2001:db8:cafe:0:835::aa0        ← правило 2</pre>
+<h3>4. Протоколы</h3>
+<div class="tblwrap"><table class="tbl">
+<tr><td>IP</td><td>адресация и доставка пакетов</td></tr>
+<tr><td>TCP</td><td>надёжная доставка: по порядку, с проверкой ошибок</td></tr>
+<tr><td>UDP</td><td>быстрая доставка без гарантий</td></tr>
+<tr><td>DNS</td><td>переводит имя в IP. IP пингуется, а имя нет → сломан DNS</td></tr>
+<tr><td>DHCP</td><td>автоматически раздаёт IP-адреса</td></tr>
+</table></div>
+<h3>5. Команды</h3>
+<div class="tblwrap"><table class="tbl">
+<tr><td>ipconfig</td><td>показать IP; /all — подробно, /release и /renew — сдать и получить адрес</td></tr>
+<tr><td>ping</td><td>отправить пакеты на IP и проверить связь</td></tr>
+<tr><td>tracert</td><td>показать путь до узла по шагам (hops) и где он обрывается</td></tr>
+<tr><td>nslookup</td><td>проверить работу DNS</td></tr>
+<tr><td>netstat</td><td>активные соединения</td></tr>
+</table></div>
+<h3>6. Wi-Fi и среда передачи</h3>
+<ul>
+<li>В диапазоне 2,4 ГГц не перекрываются только каналы <b>1, 6, 11</b>. Их выбирают, чтобы избежать помех.</li>
+<li><b>MAC address filtering</b> разрешает или блокирует устройство по физическому (MAC) адресу.</li>
+<li>WEP — слабая защита, WPA2 и <b>WPA3</b> — сильные. Wi-Fi 6 = 802.11ax.</li>
+<li>Сильные помехи (EMI) → <b>fiber optic</b>. Самый быстрый интернет — тоже <b>fiber</b>.</li>
+<li>Чтобы перехватывать трафик в <b>gigabit Ethernet</b>, нужен активный TAP с питанием.</li>
+</ul>`},
+
+l5:{wk:"Неделя 6",quiz:"Quiz 5",short:"IP-камеры",block:"end",title:"IP-камеры и видеонаблюдение",html:`
+<p class="lead">Практика 5: телефоны работали как IP-камеры, а потоки со всех камер собирали на одном компьютере в iSpy / Agent DVR.</p>
+<h3>1. Что такое IP-камера</h3>
+<p>Камера с сетевым интерфейсом и своим IP-адресом. Она отдаёт видео по сети, а программа видеонаблюдения на компьютере его принимает, показывает и записывает.</p>
+<h3>2. MJPEG и RTSP</h3>
+<div class="tblwrap"><table class="tbl">
+<tr><td>MJPEG</td><td>поток отдельных JPEG-кадров; просто, но сильно грузит сеть</td></tr>
+<tr><td>RTSP</td><td>поток сжатого видео (H.264, H.265); экономнее</td></tr>
+</table></div>
+<h3>3. Agent DVR / iSpy</h3>
+<ul>
+<li>Детектор движения программный: <b>сравнивает яркость пикселей</b> в соседних кадрах.</li>
+<li>Когда он срабатывает, вокруг камеры появляется <b>красная рамка</b>, а график движения резко поднимается.</li>
+<li>Запись включается по движению. <b>Pre-buffer</b> сохраняет несколько секунд <b>до</b> движения, чтобы событие попало в запись целиком.</li>
+</ul>
+<h3>4. Сетевые проблемы</h3>
+<ul>
+<li>Камере дают <b>статический IP</b>. Если аренда DHCP истечёт, адрес сменится, и поток оборвётся.</li>
+<li>Два устройства с одинаковым IP → <b>ARP-конфликт</b>, связь ломается у обоих.</li>
+<li>В университетском Wi-Fi включён <b>AP/Client Isolation</b>: устройства не видят друг друга. Решение — <b>Personal Hotspot</b> на телефоне, тогда все в одной подсети.</li>
+<li>Несколько камер в <b>4K</b> по Wi-Fi → перегрузка сети, потеря пакетов и высокая нагрузка на ПК.</li>
+</ul>`},
+
+l6:{wk:"Неделя 7",quiz:"Quiz 6",short:"Виртуализация",block:"end",title:"Виртуализация, облако, LiveUSB и ESXi",html:`
+<p class="lead">Практики 7–8: в VMware Workstation создавали VM и ставили Windows 10 Pro, делали LiveUSB, а на сервере с VMware ESXi создавали VM и ставили ОС.</p>
+<h3>1. Гипервизор</h3>
+<p>Гипервизор создаёт виртуальные машины (VM) и управляет ими на одном физическом компьютере (host). Каждая VM — отдельная гостевая ОС (guest) со своими виртуальными CPU, RAM и диском.</p>
+<div class="tblwrap"><table class="tbl">
+<tr><td>Type 1 (bare metal)</td><td>ставится прямо на железо сервера, для дата-центров: VMware ESXi, Microsoft Hyper-V</td></tr>
+<tr><td>Type 2 (hosted)</td><td>работает как программа поверх ОС: VMware Workstation, VirtualBox, Parallels</td></tr>
+</table></div>
+<div class="note">Mac, на котором запустили Windows в VM, — это <b>Type 2</b>. Дата-центр — <b>Type 1</b>.</div>
+<h3>2. Зачем виртуализация</h3>
+<ul>
+<li>Запустить программу, которая не работает в твоей ОС: создать VM с подходящей ОС.</li>
+<li>Меньше физических серверов, изоляция, тесты, снимки (snapshots).</li>
+<li>Восстановление после сбоев: <b>live migration</b> переносит работающую VM на другой сервер без остановки.</li>
+<li>Процессор должен поддерживать виртуализацию (Intel VT-x или AMD-V), её включают в BIOS/UEFI.</li>
+</ul>
+<h3>3. LiveUSB</h3>
+<p>Флешка с ОС, которая загружается и работает без установки на жёсткий диск. Загрузиться с неё можно через Boot Menu или порядок загрузки в BIOS/UEFI.</p>
+<h3>4. Облако</h3>
+<p>Главное свойство: приложения доступны <b>через интернет с любого устройства и из любой точки мира</b>.</p>
+<div class="tblwrap"><table class="tbl">
+<tr><td>Public</td><td>для всех желающих</td></tr>
+<tr><td>Private</td><td>для одной организации, например госструктуры</td></tr>
+<tr><td>Hybrid</td><td>два облака и больше в одной архитектуре</td></tr>
+<tr><td>Community</td><td>для группы организаций с общей задачей</td></tr>
+<tr><td>SaaS</td><td>готовое ПО: Gmail, Office 365</td></tr>
+<tr><td>PaaS</td><td>платформа для разработки</td></tr>
+<tr><td>IaaS</td><td>виртуальные серверы, хранилище, сеть</td></tr>
+</table></div>`},
+
+l7:{wk:"Неделя 8",quiz:"Quiz 7",short:"DHCP, FTP, IIS",block:"end",title:"DHCP, FTP в FileZilla и веб-сервер IIS",html:`
+<p class="lead">Практика 6: в FileZilla поднимали FTP-сервер и подключались к нему клиентом, а в IIS делали веб-сервер со своей страницей (фото и имя), чтобы открывать страницы друг друга по LAN.</p>
+<h3>1. DHCP и маска</h3>
+<ul>
+<li>DHCP автоматически раздаёт IP, маску, шлюз и DNS. Порты 67 и 68.</li>
+<li>Процесс <b>DORA</b>: Discover → Offer → Request → Acknowledge.</li>
+<li>Адрес выдаётся на время (<b>lease</b>). Если DHCP не ответил, ПК берёт APIPA 169.254.x.x.</li>
+<li><b>Subnet mask</b> отделяет network ID от host ID.</li>
+</ul>
+<h3>2. FTP в FileZilla</h3>
+<ul>
+<li>Связка: <b>FileZilla Server</b> + <b>FileZilla Client</b>.</li>
+<li>Порты: <b>21</b> — команды (control), <b>20</b> — данные.</li>
+<li>На сервере создают пользователя и в <b>Mount points</b> задают <b>Virtual path "/"</b> → <b>Native path</b>, то есть настоящую папку на диске.</li>
+<li>В клиенте: Host = IP сервера, имя, пароль, порт 21.</li>
+</ul>
+<h3>3. Веб-сервер IIS</h3>
+<ul>
+<li>Включается в <b>Turn Windows features on or off → Internet Information Services (IIS)</b>.</li>
+<li>Корень сайта: <code>C:\\inetpub\\wwwroot\\</code>. У Apache корень — htdocs.</li>
+<li>Страница по умолчанию — <b>index.html</b>.</li>
+<li>У себя страницу открывают по <code>http://localhost</code>. localhost = 127.0.0.1 = этот компьютер, поэтому у партнёра вводят <b>его IP</b>.</li>
+<li>Если твоя страница не открывается у партнёра, значит <b>Windows Firewall</b> блокирует входящие подключения на порт 80. Открыть порт можно так:</li>
+</ul>
+<pre class="mono">New-NetFirewallRule -DisplayName "HTTP" -Direction Inbound -LocalPort 80 -Protocol TCP -Action Allow</pre>
+<ul>
+<li>HTTP — порт <b>80</b>, HTTPS — <b>443</b>.</li>
+<li>Связь между компьютерами проверяют через <b>ping</b>.</li>
+</ul>`},
+
+l8:{wk:"Неделя 9",quiz:"Quiz 8",short:"ОС и команды",block:"end",title:"ОС и командная строка: Windows, Linux, macOS",html:`
+<p class="lead">Quiz 8 был про командную строку и операционные системы. На эндтерме много вопросов было именно отсюда.</p>
+<h3>1. Команды Windows</h3>
+<div class="tblwrap"><table class="tbl">
+<tr><td>md (mkdir)</td><td>создать папку</td></tr>
+<tr><td>cd</td><td>перейти в папку</td></tr>
+<tr><td>dir</td><td>список файлов</td></tr>
+<tr><td>move</td><td>переместить файл</td></tr>
+<tr><td>copy / del</td><td>скопировать / удалить</td></tr>
+<tr><td>chkdsk</td><td>проверить диск на ошибки</td></tr>
+<tr><td>sfc /scannow</td><td>восстановить системные файлы</td></tr>
+<tr><td>format / diskpart</td><td>форматирование / работа с разделами</td></tr>
+<tr><td>bootrec</td><td>починить загрузку (MBR, BCD)</td></tr>
+<tr><td>gpupdate</td><td>применить новые групповые политики</td></tr>
+<tr><td>gpresult</td><td>показать применённые политики</td></tr>
+<tr><td>tasklist / taskkill</td><td>список процессов / завершить процесс</td></tr>
+<tr><td>netstat</td><td>все активные TCP-соединения</td></tr>
+<tr><td>runas</td><td>запустить от имени другого пользователя</td></tr>
+<tr><td>rstrui</td><td>восстановление системы (System Restore)</td></tr>
+<tr><td>mstsc</td><td>удалённый рабочий стол (RDP)</td></tr>
+</table></div>
+<h3>2. Загрузка и диски</h3>
+<ul>
+<li>«<b>Invalid Boot Disk</b>» после POST → повреждён <b>MBR</b>.</li>
+<li><b>MBR</b>: диск до 2 ТБ и не больше 4 основных разделов. <b>GPT</b> снимает эти ограничения, но для загрузки Windows с GPT нужен <b>UEFI</b>.</li>
+<li>Логическая часть диска, которую форматируют, — <b>partition</b>. Так в ключе на эндтерме.</li>
+<li>Установка Windows: <b>clean install</b> — с нуля, с очисткой диска; upgrade — поверх старой системы.</li>
+<li>Файловые системы: <b>NTFS</b> (права, шифрование), <b>FAT32</b> (файл до 4 ГБ), exFAT (флешки), <b>ext3/ext4</b> (Linux), <b>APFS</b> (современный Mac), HFS+ (старый Mac), CDFS (CD).</li>
+<li>Инструменты Windows: Device Manager — драйверы, Event Viewer — журналы, Task Manager — процессы, msconfig — загрузка и службы, regedit — реестр.</li>
+</ul>
+<h3>3. Linux</h3>
+<div class="tblwrap"><table class="tbl">
+<tr><td>ls</td><td>список файлов</td></tr>
+<tr><td>cd / pwd</td><td>перейти / показать текущую папку</td></tr>
+<tr><td>mkdir</td><td>создать папку</td></tr>
+<tr><td>cp</td><td>копировать</td></tr>
+<tr><td>mv</td><td>переместить или переименовать</td></tr>
+<tr><td>rm</td><td>удалить</td></tr>
+<tr><td>vim / nano</td><td>текстовый редактор</td></tr>
+<tr><td>chmod / chown</td><td>права / владелец</td></tr>
+<tr><td>sudo</td><td>выполнить команду от имени root</td></tr>
+<tr><td>grep</td><td>поиск текста</td></tr>
+</table></div>
+<div class="note">Бэкап в новую папку: <b>mkdir + cp</b>, проверка — <b>ls</b>. Команда mv не подходит: она переносит файлы, а не копирует.</div>
+<h3>4. Права в Linux</h3>
+<p>Права даются трём группам: <b>owner</b>, <b>group</b>, <b>all users</b> (others). В каждой тройке r = 4, w = 2, x = 1. Читай права по три символа.</p>
+<pre class="mono">rw- r-- r--   →  6 4 4  →  644
+rw- r-x --x   →  6 5 1  →  651
+rwx r-x r-x   →  7 5 5  →  755</pre>
+<h3>5. macOS и мобильные ОС</h3>
+<ul>
+<li><b>APFS</b> — файловая система Mac, <b>Time Machine</b> — бэкап, <b>Finder</b> — файлы, <b>Netboot</b> — загрузка Mac по сети, например для переустановки многих машин.</li>
+<li><b>Android</b> — открытая система (open source); снять её ограничения — <b>rooting</b>. <b>iOS</b> — закрытая; для неё это jailbreak.</li>
+</ul>`},
+
+ite:{wk:"Финал",quiz:"IT Essentials 8",short:"IT Essentials",block:"fin",title:"IT Essentials 8: безопасность, ноутбуки, профессия и обзор модулей",html:`
+<p class="lead">Допуск к финалу — сертификат IT Essentials 8. Мидтерм брал вопросы из модулей 1, 2, 5, 6 и 8, поэтому на финале могут быть темы из всех 14 модулей. Здесь то, чего не было в темах по неделям.</p>
+<h3>1. Безопасность (модуль 13)</h3>
+<div class="tblwrap"><table class="tbl">
+<tr><td>Virus</td><td>прикрепляется к файлу, распространяется через почту и файлы. По ключу эндтерма кейлоггер по почте — тоже virus</td></tr>
+<tr><td>Worm</td><td>сам распространяется по сети</td></tr>
+<tr><td>Trojan</td><td>выглядит как нормальная программа</td></tr>
+<tr><td>Ransomware</td><td>шифрует файлы и требует выкуп</td></tr>
+<tr><td>Rootkit</td><td>прячется глубоко в ОС, его трудно найти</td></tr>
+<tr><td>Adware / Spyware</td><td>реклама / слежка</td></tr>
+<tr><td>Phishing</td><td>поддельное письмо, которое выманивает данные</td></tr>
+<tr><td>DDoS</td><td>много компьютеров одновременно заваливают сервер запросами</td></tr>
+<tr><td>Tailgating</td><td>пройти следом за сотрудником через закрытую дверь</td></tr>
+<tr><td>Shoulder surfing</td><td>подглядывать через плечо</td></tr>
+</table></div>
+<p>Защита в Windows: <b>BitLocker</b> шифрует весь диск, EFS — отдельные файлы. Также Firewall, UAC и антивирус.</p>
+<h3>2. Ноутбуки и мобильные устройства (модуль 7)</h3>
+<ul>
+<li>Память ноутбука — <b>SODIMM</b>. Клавиша <b>Fn</b> вместе с F1–F12 меняет яркость, звук, включает Wi-Fi.</li>
+<li><b>NFC</b> работает на очень маленьком расстоянии, например при бесконтактной оплате. Bluetooth — для наушников, hotspot — раздача интернета.</li>
+<li>Почта: <b>POP3</b> (110) скачивает письма и обычно удаляет их с сервера, <b>IMAP</b> (143) хранит почту на сервере и синхронизирует, <b>SMTP</b> (25) отправляет.</li>
+</ul>
+<h3>3. Обслуживание и troubleshooting (модули 3–4)</h3>
+<ol>
+<li>Identify the problem</li>
+<li>Establish a theory of probable cause</li>
+<li>Test the theory to determine the cause</li>
+<li>Establish a plan of action and implement the solution</li>
+<li>Verify full system functionality and implement preventive measures</li>
+<li>Document findings, actions, and outcomes</li>
+</ol>
+<p>Мультиметр меряет напряжение и прозванивает провод. Антистатический браслет защищает от ESD.</p>
+<h3>4. IT-профессионал (модуль 14)</h3>
+<ul>
+<li>С клиентом: дать ему рассказать о проблеме не перебивая, говорить без жаргона и вежливо.</li>
+<li><b>PII</b> — персональные данные: имя, адрес, номер документа. Их нужно защищать.</li>
+<li><b>Chain of custody</b> — запись о том, кто, когда и как обращался с уликами.</li>
+</ul>
+<h3>5. Все модули IT Essentials 8 коротко</h3>
+<div class="tblwrap"><table class="tbl">
+<tr><td>1</td><td>Железо ПК и безопасность работы: компоненты, ESD, электричество</td></tr>
+<tr><td>2</td><td>Сборка ПК: порядок установки компонентов</td></tr>
+<tr><td>3</td><td>Продвинутое железо: POST, BIOS/UEFI, питание, RAID, апгрейд, утилизация</td></tr>
+<tr><td>4</td><td>Профилактика и 6 шагов troubleshooting</td></tr>
+<tr><td>5</td><td>Сетевые понятия: типы сетей, устройства, протоколы и порты, кабели</td></tr>
+<tr><td>6</td><td>Прикладные сети: настройка IP, Wi-Fi, диагностика</td></tr>
+<tr><td>7</td><td>Ноутбуки и мобильные устройства</td></tr>
+<tr><td>8</td><td>Принтеры</td></tr>
+<tr><td>9</td><td>Виртуализация и облака</td></tr>
+<tr><td>10</td><td>Установка Windows: разделы, файловые системы, загрузка</td></tr>
+<tr><td>11</td><td>Настройка Windows: панели, инструменты, CLI, обслуживание</td></tr>
+<tr><td>12</td><td>Мобильные ОС, Linux, macOS</td></tr>
+<tr><td>13</td><td>Безопасность</td></tr>
+<tr><td>14</td><td>IT-профессионал: общение, этика, закон</td></tr>
+</table></div>`}
+};
+const ORDER = ["l1","l2","l3","l4","l5","l6","l7","l8","ite"];
+const BLOCKS = [
+  {id:"mid",title:"До мидтерма",sub:"1-я аттестация · недели 2–5",lessons:["l1","l2","l3","l4"],
+   exam:{key:"mid",title:"Пробный мидтерм",n:25,min:30,desc:"25 вопросов по неделям 2–5, 30 минут. Настоящий мидтерм шёл по модулям IT Essentials 1, 2, 5, 6, 8 и практикам."}},
+  {id:"end",title:"До эндтерма",sub:"2-я аттестация · недели 6–9",lessons:["l5","l6","l7","l8"],
+   exam:{key:"end",title:"Пробный эндтерм",n:20,min:30,desc:"20 вопросов по неделям 6–9 и с настоящего эндтерма, 30 минут. Частые ошибки на эндтерме: partition, 651 и mv вместо cp."}},
+  {id:"fin",title:"Финал",sub:"Final Test: 40 вопросов · 50 минут · 1 попытка · на компьютере",lessons:["ite"],
+   exam:{key:"fin",title:"Пробный финал",n:40,min:50,desc:"40 вопросов из всего курса, 50 минут, как на настоящем Final Test."}}
+];
+
+/* ===================== QUESTIONS ===================== */
+/* "*" marks correct options. type "order" = items in correct order; "match" = pairs + extra distractors. src: lms | ite */
+const Q = [
+// l1 — cables & basics
+{l:"l1",src:"lms",s:"Quiz 1 · Midterm",q:"What does UTP stand for?",o:["*Unshielded Twisted Pair","Unified Testing Pair","Universal Twisted Pair","Undefeated Training Portal"],e:"UTP — неэкранированная витая пара, обычный кабель Ethernet. STP — экранированная."},
+{l:"l1",src:"lms",s:"Quiz 1",q:"What is the very first step when you build the UTP network cable?",o:["*Cut the cable to length","Remove the shielding","Crimp the cable","Test the cable"],e:"Порядок: отрезать длину → снять оболочку → разложить жилы по T568B → вставить в RJ-45 → обжать → проверить тестером."},
+{l:"l1",src:"lms",s:"Quiz 1 · Midterm",q:"What tool is used to attach connector to the cable?",o:["*Crimper","Cutter","Butter","Chopper"],e:"Crimper (обжимка) обжимает коннектор RJ-45."},
+{l:"l1",src:"lms",s:"Midterm",q:"What tool is typically used to strip the outer jacket of a UTP cable before crimping?",o:["*Cable stripper","Soldering iron","Multimeter","Torque wrench"],e:"Stripper снимает внешнюю оболочку кабеля."},
+{l:"l1",src:"lms",s:"Midterm",q:"What should you do if a newly crimped RJ-45 connector fails the continuity test on pin 3?",o:["*Cut off the connector, re-strip, re-order/verify wires, and crimp a new connector","Ignore it if pins 1, 2, and 6 work","Heat the connector with a lighter to melt the pins","Apply electrical tape to the connector"],e:"Коннектор одноразовый: отрезать, заново разложить жилы и обжать новый."},
+{l:"l1",src:"lms",s:"Quiz 1",type:"order",q:"Put the wires in the correct T568B order (pin 1 → pin 8).",items:["White-Orange","Orange","White-Green","Blue","White-Blue","Green","White-Brown","Brown"],e:"Оранжевая пара первая. В T568A оранжевая и зелёная пары поменяны местами."},
+{l:"l1",src:"lms",s:"Quiz 1",q:"From which type of data storage does the CPU load information for processing during normal operation?",o:["*RAM","ROM","SSD","hard drive"],e:"Процессор берёт данные из оперативной памяти. SSD и HDD — долговременное хранение."},
+{l:"l1",src:"lms",s:"Quiz 1 · Midterm",q:"Which component controls the communications and interactions between the CPU and other components on the motherboard?",o:["*chipset","RAM","BIOS","CMOS"],e:"Чипсет — диспетчер платы. BIOS — прошивка запуска, CMOS — память для настроек BIOS."},
+{l:"l1",src:"lms",s:"Quiz 1 · Midterm",q:"Which two storage devices use a magnetic medium for storing data? (Choose two.)",o:["*tape drive","*hard disk drive","compact disk drive","solid state drive","blu-ray disk drive"],e:"CD и Blu-ray — оптические (лазер), SSD — флеш-память."},
+{l:"l1",src:"lms",s:"Quiz 1",q:"Which unit of measurement is used to indicate the hard drive speed?",o:["*revolutions per minute","clusters per minute","gigabytes","pages per minute"],e:"RPM — обороты в минуту (5400, 7200). Pages per minute — скорость принтера."},
+{l:"l1",src:"ite",s:"ITE 8 · Mod 1",q:"Which tool measures voltage and checks continuity of a wire?",o:["*multimeter","loopback plug","punch-down tool","crimper"],e:"Мультиметр меряет напряжение, сопротивление и прозванивает провод."},
+
+// l2 — printers
+{l:"l2",src:"lms",s:"Quiz 2",q:"Which factor affects the speed of an inkjet printer?",o:["*the desired quality of the image","the cost of the inkjet cartridges","the size of printer power supply","the quality of the paper"],e:"Чем выше качество печати, тем медленнее печатает струйный принтер."},
+{l:"l2",src:"lms",s:"Quiz 2",q:"A school is installing a new shared printer but the printer is not showing up on the list of available printers. What should the technician do to resolve the issue?",o:["*Manually add the printer IP address.","Check the vibration of the crystals.","Rewind the ribbon.","Reset the page counter.","Clean the printer."],e:"Сетевой принтер, который не нашёлся сам, добавляют вручную по IP."},
+{l:"l2",src:"lms",s:"Quiz 2 · Midterm",q:"In laser printing, what is the name of the process of applying toner to the latent image on the drum?",o:["*developing","fusing","charging","transferring"],e:"Developing — тонер на барабан. Transferring — с барабана на бумагу. Fusing — запекание."},
+{l:"l2",src:"lms",s:"Quiz 2 · Midterm",q:"A technician is installing a printer that will be directly connected to a computer. Why does the technician not connect the printer initially during the installation process?",o:["*The printer driver might need to be installed first before the printer is connected.","The OS of the workstation needs to be updated first.","The Microsoft download site needs to be searched first for the printer driver.","The printer needs to be configured first."],e:"Драйвер ставят до подключения, чтобы Windows не поставила неправильный."},
+{l:"l2",src:"lms",s:"Quiz 2",q:"A user is complaining that the printer is printing pages with no image on them. What should the technician do to resolve the issue?",o:["*Replace the toner cartridge","Clean the printer","Check the vibration of the Crystal’s","Reset the page counter","Update the OS"],e:"Пустые страницы — закончился тонер."},
+{l:"l2",src:"lms",s:"Quiz 2",type:"match",q:"Match the common printer configuration options to the correct descriptions. (Not all options are used.)",pairs:[["images printed using only black ink in different shades","grayscale printing"],["landscape or portrait","paper orientation"],["print sets of document with multiple pages","collate"],["normal, banner, booklet, or poster","print layout"],["two-sided printing","duplex"]],extra:["nujabes"],e:"Grayscale — оттенки чёрного. Orientation — альбомная или книжная. Collate — комплектами. Layout — баннер, буклет, постер. Duplex — двусторонняя."},
+{l:"l2",src:"lms",s:"Quiz 2 · Midterm (фото)",q:"Photo from Practice 3: the block inside the laser printer with the laser and mirror that you opened to photograph the PCB. What is it?",o:["*Laser Unit","Power Supply Unit","Toner","Cartridge","Drum"],e:"На практике принтер разбирали до Laser Unit. На фото в квизе ответ — Laser Unit."},
+{l:"l2",src:"lms",s:"Quiz 2 · Midterm",q:"Which device can scan a document and attach the scan to an email?",o:["*networked MFD","thermal printer","laser printer","automatic document feeder"],e:"MFD — многофункциональное устройство (принтер, сканер, копир). В сети оно отправляет скан по почте."},
+{l:"l2",src:"lms",s:"Midterm",q:"A small company is moving towards sharing printers to reduce the number of printers used within the company. The technician has security concerns. What security risk is associated with sharing a printer?",o:["*data privacy","shoulder surfing","replay attacks","dumpster diving"],e:"Через общий принтер документы могут попасть не тем людям — риск конфиденциальности."},
+{l:"l2",src:"ite",s:"ITE 8 · Mod 8",type:"order",q:"Put the laser printing steps in order.",items:["Processing","Charging","Exposing","Developing","Transferring","Fusing","Cleaning"],e:"Processing → Charging → Exposing → Developing → Transferring → Fusing → Cleaning."},
+{l:"l2",src:"ite",s:"ITE 8 · Mod 8",q:"Which laser printing step uses heat and pressure to permanently bond toner to the paper?",o:["*fusing","developing","transferring","charging"],e:"Fusing — фьюзер запекает тонер в бумагу."},
+{l:"l2",src:"ite",s:"ITE 8 · Mod 8",q:"Which printer type uses heat-sensitive paper, for example for receipts?",o:["*thermal printer","inkjet printer","laser printer","impact printer"],e:"Термопринтер печатает нагревом специальной бумаги."},
+{l:"l2",src:"ite",s:"ITE 8 · Mod 8",q:"Which printer type is used to print multipart (carbon copy) forms?",o:["*impact (dot matrix) printer","inkjet printer","laser printer","thermal printer"],e:"Ударный принтер пробивает несколько слоёв копировальной бумаги."},
+
+// l3 — PC assembly
+{l:"l3",src:"lms",s:"Quiz 3",q:"Where is buffered memory commonly used?",o:["*servers","gaming computers","gaming laptops","tablets","business PCs"],e:"Buffered (registered) память стабильнее при большом объёме, её ставят в серверы."},
+{l:"l3",src:"lms",s:"Quiz 3 · Midterm",q:"When a new PC is being built, which component has the most influence when selecting the case and power supply?",o:["*motherboard","RAM module","hard disk type","video card","sound card"],e:"Форм-фактор материнской платы (ATX, microATX) определяет корпус и блок питания."},
+{l:"l3",src:"lms",s:"Quiz 3",q:"Which type of memory module is usually installed in laptops?",o:["*SODIMM","DIMM","NARUTO","ESIMM","SSRDIMM"],e:"SODIMM — короткая планка для ноутбуков. DIMM — для настольных ПК."},
+{l:"l3",src:"lms",s:"Quiz 3",q:"Which type of motherboard expansion slot has four types ranging from x1 to x16 with each type having a different length of expansion slot?",o:["*PCIe","SATA","PCI","AGP"],e:"PCIe бывает x1, x4, x8, x16."},
+{l:"l3",src:"lms",s:"Quiz 3",q:"Which type of motherboard expansion slot sends data one bit at a time over a serial bus?",o:["*PCIe","PCI","PATA","RAM"],e:"PCIe — последовательная (serial) шина. PCI и PATA — параллельные."},
+{l:"l3",src:"lms",s:"Quiz 3",q:"What is used to prevent the motherboard from touching metal portions of the computer case?",o:["*standoffs","ZIF sockets","an I/O shield","thermal compound"],e:"Standoffs — стойки между платой и корпусом."},
+{l:"l3",src:"lms",s:"Quiz 3 (фото F_PANEL)",q:"Front panel header: what connectors are attached to pins 1/3?",o:["*HDD LED","POWER LED","POWER SW","RESET SW"],e:"1/3 — HDD LED, 2/4 — POWER LED, 5/7 — RESET SW, 6/8 — POWER SW."},
+{l:"l3",src:"lms",s:"Quiz 3 (фото F_PANEL)",q:"Front panel header: what connectors are attached to pins 2/4?",o:["*POWER LED","RESET SW","HDD LED","POWER SW"],e:"1/3 — HDD LED, 2/4 — POWER LED, 5/7 — RESET SW, 6/8 — POWER SW."},
+{l:"l3",src:"lms",s:"Quiz 3 (фото F_PANEL)",q:"Front panel header: what connectors are attached to pins 5/7?",o:["*RESET SW","POWER SW","POWER LED","HDD LED"],e:"1/3 — HDD LED, 2/4 — POWER LED, 5/7 — RESET SW, 6/8 — POWER SW."},
+{l:"l3",src:"lms",s:"Quiz 3 (фото F_PANEL)",q:"Front panel header: what connectors are attached to pins 6/8?",o:["*POWER SW","RESET SW","POWER LED","HDD LED"],e:"1/3 — HDD LED, 2/4 — POWER LED, 5/7 — RESET SW, 6/8 — POWER SW."},
+{l:"l3",src:"lms",s:"Midterm",q:"How is a power supply commonly attached to a tower case?",o:["*screws","restraining strap","standoffs","retention bar"],e:"Блок питания прикручивают винтами к задней стенке корпуса."},
+{l:"l3",src:"lms",s:"Midterm",q:"What is a name of the place in the case where all the drives are located?",o:["*Drivebay","DriveUnit","DrivePark","Drive slots"],e:"Drive bay — отсек для дисков."},
+{l:"l3",src:"lms",s:"Midterm",q:"A technician is installing a new high-end video adapter card into an expansion slot on a motherboard. What may be needed to operate this video adapter card?",o:["*Two 8-pin power connectors","24-pin ATX power connector","PCIe x 8 expansion slot","PCI expansion slot"],e:"Мощной видеокарте мало питания от слота, нужны дополнительные 8-pin разъёмы от БП."},
+{l:"l3",src:"ite",s:"ITE 8 · Mod 1",q:"Which tool helps prevent electrostatic discharge (ESD) damage when working inside a computer?",o:["*antistatic wrist strap","multimeter","loopback plug","crimper"],e:"Антистатический браслет выравнивает заряд между тобой и корпусом."},
+{l:"l3",src:"ite",s:"ITE 8 · Mod 3",q:"Which RAID level stripes data across disks for speed but has no fault tolerance?",o:["*RAID 0","RAID 1","RAID 5","RAID 10"],e:"RAID 0 — чередование без защиты. RAID 1 — зеркало. RAID 5 — чётность (от 3 дисков). RAID 10 — от 4."},
+{l:"l3",src:"ite",s:"ITE 8 · Mod 3",q:"Which RAID level mirrors the same data onto two drives?",o:["*RAID 1","RAID 0","RAID 5","RAID 6"],e:"RAID 1 — зеркало (mirroring)."},
+{l:"l3",src:"ite",s:"ITE 8 · Mod 3",q:"What is the minimum number of drives required for RAID 5?",o:["*3","2","4","5"],e:"RAID 5 хранит чётность, ему нужно минимум 3 диска."},
+{l:"l3",src:"ite",s:"ITE 8 · Mod 3",q:"What does POST do when the computer is turned on?",o:["*It checks the basic hardware for errors","It installs device drivers","It formats the boot drive","It launches user applications"],e:"POST — самотестирование железа при старте. Ошибки сообщаются звуковыми сигналами."},
+{l:"l3",src:"ite",s:"ITE 8 · Mod 3",q:"A computer loses its date, time and BIOS settings every time it is unplugged. What should be replaced?",o:["*CMOS battery","power supply","RAM module","hard drive"],e:"Батарейка CMOS хранит настройки BIOS и часы."},
+{l:"l3",src:"ite",s:"ITE 8 · Mod 3",q:"Which device gives a computer battery power during a short power outage?",o:["*UPS","surge protector","power strip","PSU"],e:"UPS — источник бесперебойного питания. Surge protector защищает только от скачков."},
+
+// l4 — networking
+{l:"l4",src:"lms",s:"Quiz 4",q:"What command is used to observe IP address of device?",o:["*ipconfig","enable","sendpackets","ping"],e:"ipconfig показывает IP, маску и шлюз. ping проверяет связь."},
+{l:"l4",src:"lms",s:"Midterm",q:"What command is used to send packets to a certain IP address?",o:["*ping","ipconfig","sendpackets","enable"],e:"ping отправляет ICMP-пакеты и ждёт ответа."},
+{l:"l4",src:"lms",s:"Quiz 4 · Midterm · Endterm V1",q:"Which type of network requires an active, powered TAP (test access point) to capture network traffic?",o:["*gigabit Ethernet","10 Megabit Ethernet","wireless","load balanced","no correct answer"],e:"В гигабитном Ethernet данные идут по всем 4 парам в обе стороны, пассивный TAP их не разделит."},
+{l:"l4",src:"lms",s:"Quiz 4 · Endterm V2",q:"Which IPv6 address represents the most compressed form of the IPv6 address 2001:0db8:cafe:0000:0835:0000:0000:0aa0/80?",o:["*2001:db8:cafe:0:835::aa0/80","2001:0db8:cafe:0000:0835::0aa/80","2001:db8:cafe:0000:0835::aa0/80","2001:0db8:cafe:0000:0835::0aa0/80","2001:db8:cafe::0835::aa0/80"],code:true,e:"1) Убрать ведущие нули (0db8→db8, 0000→0, 0aa0→aa0). 2) Самую длинную серию нулевых групп заменить на :: и только один раз."},
+{l:"l4",src:"lms",s:"Quiz 4 · Endterm",q:"Which network server is malfunctioning if a user can ping the IP address of a web server but cannot ping the web server host name?",o:["*the DNS server","the FTP server","the DHCP server","the HTTP server","the HTTPS server"],e:"По IP пингуется — сеть работает. Не работает перевод имени в IP — это DNS."},
+{l:"l4",src:"lms",s:"Quiz 4",q:"How many bits are used to represent the network address of a host with an IP address of 192.168.150.16 and a subnet mask of 255.255.0.0?",o:["*16","128","32","42"],e:"255.255.0.0 — два октета по 8 единиц, то есть 16 бит сети (/16)."},
+{l:"l4",src:"lms",s:"Quiz 4",q:"What is DNS?",o:["*Domain Name System","Driver Net Service","Digital Networking Service","Domain Expansion: Infinite Void"],e:"DNS переводит имена (google.com) в IP-адреса."},
+{l:"l4",src:"lms",s:"Quiz 4",q:"What is IP?",o:["*Internet Protocol, a set of rules governing data formatting and addressing","Instant Ping, a command used to check network latency instantly","Internal Program, a system software used to boot up the BIOS","Integrated Port, a hardware slot for connecting fiber optics"],e:"IP — протокол адресации и доставки пакетов."},
+{l:"l4",src:"lms",s:"Midterm",q:"What is TCP?",o:["*Transmission Control Protocol, providing reliable, ordered, and error-checked delivery of a stream of bytes","Telecommunication Cableing Procedure, a guideline for building UTP networks","Terminal Connection Program, a legacy tool for remote command lines","Total Control Panel, a utility used to manage Windows system services"],e:"TCP — надёжная доставка с проверкой и порядком. UDP — быстрая, без гарантий."},
+{l:"l4",src:"lms",s:"Midterm",q:"What is switch?",o:["*A networking hardware device that connects devices on a network and forwards data using packet switching","A protocol that translates domain names into IP addresses","A cable tester tool used to check UTP pinouts","A wireless router channel selector"],e:"Коммутатор соединяет устройства в LAN и пересылает кадры по MAC-адресам."},
+{l:"l4",src:"lms",s:"Quiz 4 · Midterm",q:"A technician is configuring the channel on a wireless router to either 1, 6, or 11. What is the purpose of adjusting the channel?",o:["*to avoid interference from nearby wireless devices","to provide stronger security modes","to disable broadcasting of the SSID","to enable different 802.11 standards"],e:"В диапазоне 2,4 ГГц не перекрываются только каналы 1, 6 и 11."},
+{l:"l4",src:"lms",s:"Midterm",q:"Which filtering method uses the physical address to specify exactly which device is allowed or blocked from sending data on a network?",o:["*MAC address filtering","whitelisting","port triggering","port forwarding"],e:"Физический адрес — это MAC."},
+{l:"l4",src:"lms",s:"Midterm",q:"A technician is searching through a storage locker and finds a firewall. What is the purpose of this device?",o:["*It is placed between two or more networks and protects data and equipment from unauthorized access.","It connects a home or business network to a company that provides internet connectivity as well as television signals.","It is a device that uses existing electrical wiring to connect devices and sends data using specific frequencies.","It is a device that can be inserted in the middle of a cable run to add power."],e:"Остальные варианты — кабельный модем, powerline-адаптер и PoE-инжектор."},
+{l:"l4",src:"lms",s:"Midterm",q:"What is a characteristic of a WAN?",o:["*It connects multiple networks that are geographically separated.","It is typically owned and managed by a single home or business.","It requires a wireless access point to connect users to the network.","It spans across a campus or city to enable sharing of regional resources."],e:"WAN — сеть между городами и странами. Кампус или город — это MAN."},
+{l:"l4",src:"lms",s:"Midterm",q:"Which type of connection to the Internet is capable of the fastest transfer rates?",o:["*fiber","POTS","ISDN","cable","satellite"],e:"Оптоволокно — самое быстрое."},
+{l:"l4",src:"lms",s:"Midterm",q:"A network specialist has been hired to install a network in a company that assembles airplane engines. The area is highly affected by electromagnetic interference. Which type of network media should be recommended so that the data communication will not be affected by EMI?",o:["*fiber optic","coaxial","STP","UTP"],e:"Оптика передаёт свет, а не ток, поэтому EMI на неё не влияет."},
+{l:"l4",src:"lms",s:"Endterm V2",q:"How many bits are used to represent an IPv4 address?",o:["*32","128","48","12","64"],e:"IPv4 — 4 октета по 8 бит, итого 32."},
+{l:"l4",src:"lms",s:"Endterm V1",q:"How many bits are used to represent an IPv6 address?",o:["*128","48","12","32","64"],e:"IPv6 — 8 групп по 16 бит, итого 128."},
+{l:"l4",src:"lms",s:"Endterm V2",q:"A user is troubleshooting a connectivity issue from the PC to a web server and wants to see a list of the traffic stops between the PC and the web server. What is the best Windows command to select to do the job?",o:["*tracert","bootrec","recover","diskpart","tasklist"],e:"tracert показывает каждый маршрутизатор по пути, и видно, где связь обрывается."},
+{l:"l4",src:"ite",s:"ITE 8 · Mod 5",type:"match",q:"Match the protocol to its default port.",pairs:[["SSH","22"],["SMTP","25"],["DNS","53"],["HTTPS","443"],["RDP","3389"]],extra:["110","23"],e:"Ещё: FTP 20/21, Telnet 23, DHCP 67/68, HTTP 80, POP3 110, IMAP 143."},
+{l:"l4",src:"ite",s:"ITE 8 · Mod 6",q:"A Windows PC cannot reach the DHCP server. Which address will it most likely assign itself (APIPA)?",o:["*169.254.10.20","192.168.1.10","10.0.0.5","127.0.0.1"],code:true,e:"APIPA — 169.254.x.x. Такой адрес значит, что DHCP не ответил."},
+{l:"l4",src:"ite",s:"ITE 8 · Mod 5",q:"Which IPv4 address is a private address?",o:["*172.16.5.4","8.8.8.8","172.32.0.1","11.1.1.1"],code:true,e:"Частные: 10.0.0.0/8, 172.16.0.0–172.31.255.255, 192.168.0.0/16."},
+{l:"l4",src:"ite",s:"ITE 8 · Mod 5",q:"Which address is the IPv4 loopback address (localhost)?",o:["*127.0.0.1","169.254.0.1","192.168.0.1","255.255.255.255"],code:true,e:"127.0.0.1 — это сам компьютер."},
+{l:"l4",src:"ite",s:"ITE 8 · Mod 5",q:"What is the default subnet mask for a Class C network?",o:["*255.255.255.0","255.255.0.0","255.0.0.0","255.255.255.255"],code:true,e:"Класс A — /8, класс B — /16, класс C — /24."},
+{l:"l4",src:"ite",s:"ITE 8 · Mod 6",q:"Which command asks the DHCP server for a new IP address?",o:["*ipconfig /renew","ipconfig /all","nslookup","tracert"],code:true,e:"ipconfig /release отдаёт адрес, ipconfig /renew получает новый."},
+{l:"l4",src:"ite",s:"ITE 8 · Mod 6",q:"Which command is used to test DNS name resolution?",o:["*nslookup","netstat","tasklist","gpupdate"],e:"nslookup спрашивает у DNS, какой IP у имени."},
+{l:"l4",src:"ite",s:"ITE 8 · Mod 6",q:"What is the purpose of the default gateway in IP settings?",o:["*It is the router address used to reach other networks","It assigns IP addresses to hosts","It translates names to IP addresses","It filters spam email"],e:"Шлюз — маршрутизатор, через который ПК выходит в другие сети."},
+{l:"l4",src:"ite",s:"ITE 8 · Mod 5",q:"Which device forwards frames using a MAC address table?",o:["*switch","hub","repeater","modem"],e:"Switch — по MAC, router — по IP, hub шлёт на все порты."},
+{l:"l4",src:"ite",s:"ITE 8 · Mod 5",q:"Which device connects different networks and forwards packets based on IP addresses?",o:["*router","switch","hub","patch panel"],e:"Маршрутизатор работает с IP-адресами."},
+{l:"l4",src:"ite",s:"ITE 8 · Mod 5",q:"Which IEEE standard is known as Wi-Fi 6?",o:["*802.11ax","802.11ac","802.11n","802.11g"],e:"Wi-Fi 4 = 802.11n, Wi-Fi 5 = 802.11ac, Wi-Fi 6 = 802.11ax."},
+{l:"l4",src:"ite",s:"ITE 8 · Mod 13",q:"Which wireless security protocol is the strongest?",o:["*WPA3","WEP","WPA","Open (no security)"],e:"WEP самый слабый. Сейчас используют WPA2 и WPA3."},
+
+// l5 — IP cameras
+{l:"l5",src:"lms",s:"Quiz 5",q:"What is the role of the Pre-buffer setting when configuring motion-triggered recording?",o:["*It saves moments immediately preceding the triggered movement event","It increases CPU clock rates before executing decoding algorithms","It suppresses siren alerts to prevent unnecessary audio pollution","It compresses historical archive folders to conserve SSD capacity"],e:"Пре-буфер хранит несколько секунд до движения, поэтому событие попадает в запись целиком."},
+{l:"l5",src:"lms",s:"Quiz 5",q:"How does the Agent DVR interface visually indicate that motion detection has been triggered?",o:["*By displaying a red bounding border and spiking the motion graph","By dispatching emergency SMS alerts directly to administrators","By terminating active background services and logging out users","By shifting stream resolutions downward to the lowest preset"],e:"Красная рамка и всплеск на графике движения."},
+{l:"l5",src:"lms",s:"Quiz 5",q:"What is the fundamental difference between the MJPEG and RTSP streaming protocols?",o:["*MJPEG transmits JPEG sequences, while RTSP sends compressed video","MJPEG targets local storage, while RTSP targets cloud databases","MJPEG requires active Bluetooth, while RTSP streams over Ethernet","MJPEG provides heavy encryption, while RTSP runs without security"],e:"MJPEG — поток JPEG-кадров. RTSP — сжатое видео (H.264/H.265)."},
+{l:"l5",src:"lms",s:"Quiz 5",q:"What role does a Personal Hotspot play if the university Wi-Fi network isolates connected clients?",o:["*It establishes a flat local subnet bypassing client isolation","It assigns public static IP addresses to all connected endpoints","It forces higher optical resolution on smartphone video sensors","It pushes automatic remote installation packages to workstations"],e:"На своей точке доступа все устройства в одной подсети и видят друг друга."},
+{l:"l5",src:"lms",s:"Quiz 5 · Endterm V2",q:"Why is a fixed or static IP address preferred over a dynamic DHCP lease for an IP camera?",o:["*DHCP expiration can change the IP and break the stream connection","Static addresses automatically stabilize optical focus parameters","Dynamic addressing prevents transmission of multichannel digital audio","Fixed addressing significantly reduces camera thermal power consumption","DHCP addressing is way more expensive than Static addressing"],e:"Истечёт аренда DHCP — IP камеры может смениться, и Agent DVR потеряет поток."},
+{l:"l5",src:"lms",s:"Quiz 5",q:"What happens if two devices in the same local network are accidentally configured with the identical IP address?",o:["*ARP conflicts occur, disrupting traffic flow on both devices","Both devices automatically bridge their video feeds into one","The network gateway permanently bans the physical MAC addresses","The router doubles bandwidth allocations across remaining nodes"],e:"ARP связывает IP с MAC. Два MAC на один IP — конфликт, связь ломается у обоих."},
+{l:"l5",src:"lms",s:"Quiz 5",q:"What is the main consequence of setting a very high resolution (such as 4K) on multiple streaming cameras simultaneously over a local Wi-Fi network?",o:["*Network congestion, dropped packets, and heavy system load","Immediate battery failure leading to hardware auto-shutdown","Loss of local static routing tables on core layer switches","Forced inversion of stream color palettes to save RAM buffer"],e:"Несколько 4K-потоков забивают Wi-Fi и нагружают компьютер."},
+{l:"l5",src:"lms",s:"Quiz 5",q:"How does the software-based motion detector in Agent DVR detect movement?",o:["*By comparing pixel intensity variations between video frames","By capturing ultrasound frequency shifts using microphones","By tracking thermal radiation signatures via ambient sensors","By calculating radio signal reflections off human obstacles"],e:"Программа сравнивает пиксели соседних кадров."},
+{l:"l5",src:"lms",s:"Endterm V2",q:"What network feature on Wi-Fi routers can prevent a computer from accessing a smartphone camera stream even if both are connected to the same Wi-Fi?",o:["*AP / Client Isolation","DHCP Relay","MAC Address Filtering","DNS Caching","DNS Splitting"],e:"Client isolation запрещает устройствам в одной Wi-Fi сети видеть друг друга."},
+
+// l6 — virtualization & cloud
+{l:"l6",src:"lms",s:"Quiz 6",q:"Which statement describes a characteristic of cloud computing?",o:["*Applications can be accessed over the Internet by individual users or businesses using any device, anywhere in the world.","Devices can connect to the Internet through existing electrical wiring.","A business can connect directly to the Internet without the use of an ISP.","Investment in new infrastructure is required in order to access the cloud."],e:"Облако — доступ к приложениям через интернет с любого устройства."},
+{l:"l6",src:"lms",s:"Quiz 6",q:"How does virtualization help with disaster recovery within a data center?",o:["*support of live migration","guarantee of power","supply of consistent air flow","improvement of business practices"],e:"Live migration переносит работающую VM на другой сервер без остановки."},
+{l:"l6",src:"lms",s:"Quiz 6 · Endterm",q:"Which type of hypervisor would most likely be used in a data center?",o:["*Type 1","Nexus","Hadoop","Type 2","VirtualBox"],e:"Type 1 (bare metal) ставится прямо на железо: ESXi, Hyper-V."},
+{l:"l6",src:"lms",s:"Quiz 6 · Endterm",q:"Which type of Hypervisor is implemented when a user with a laptop running the Mac OS installs a Windows virtual OS instance?",o:["*type 2","type 1","virtual machine","bare metal","hybrid"],e:"Type 2 работает поверх обычной ОС: VirtualBox, Parallels, VMware Workstation."},
+{l:"l6",src:"lms",s:"Quiz 6",q:"A technician needs to use an application that is not supported by Windows operating systems on the PC. How can the technician make this application run on the PC?",o:["*Create a virtual machine with an operating system that supports the application.","Install the application in safe mode.","Install the application with elevated permissions as administrator.","Use the Windows Compatibility mode."],e:"Ставят VM с нужной ОС."},
+{l:"l6",src:"lms",s:"Quiz 6",type:"match",q:"Match the definition to the type of cloud.",pairs:[["services made available to the general population","public cloud"],["built to meet a specific need","community cloud"],["made up of two or more clouds connected via a single architecture","hybrid cloud"],["intended for a specific organization or entity, such as the government","private cloud"]],extra:[],e:"Public — для всех. Community — общая задача. Hybrid — два облака и больше. Private — одна организация."},
+{l:"l6",src:"lms",s:"Quiz 6",q:"Which is a characteristic of a Type 1 hypervisor?",o:["*installed directly on a server","installed on an existing operating system","best suited for consumers and not for an enterprise environment","does not require management console software"],e:"Type 1 = bare metal, ставится прямо на сервер."},
+{l:"l6",src:"lms",s:"Endterm V1",q:"What is the main function of a hypervisor?",o:["*It is used to create and manage multiple VM instances on a host machine.","It is a device that synchronizes a group of sensors.","It is software used to coordinate and prepare data for analysis.","It is used by ISPs to monitor cloud computing resources.","It is a device that filters and checks security credentials."],e:"Гипервизор создаёт виртуальные машины и управляет ими."},
+{l:"l6",src:"ite",s:"Practice 8",q:"What is VMware ESXi?",o:["*A Type 1 (bare-metal) hypervisor installed directly on server hardware","A Type 2 hypervisor that runs as an app on Windows","A Linux text editor","A cloud storage service"],e:"На практике 8 VM создавали на сервере с ESXi."},
+{l:"l6",src:"ite",s:"Practice 7",q:"VMware Workstation and VirtualBox are examples of which hypervisor type?",o:["*Type 2","Type 1","bare metal","hybrid"],e:"Они ставятся как программы поверх Windows или macOS."},
+{l:"l6",src:"ite",s:"Practice 7",q:"What is a LiveUSB?",o:["*A USB flash drive with an OS that boots and runs without installing it on the hard drive","A USB drive used only for BIOS updates","A USB network adapter","A backup copy of the Windows registry"],e:"С LiveUSB система запускается прямо с флешки."},
+{l:"l6",src:"ite",s:"ITE 8 · Mod 9",q:"Which cloud service model gives the customer virtual servers, storage and network hardware?",o:["*IaaS","SaaS","PaaS","Email hosting"],e:"SaaS — готовое ПО, PaaS — платформа для разработчиков, IaaS — инфраструктура."},
+
+// l7 — DHCP / FTP / IIS
+{l:"l7",src:"lms",s:"Quiz 7",q:"What role does the Subnet Mask play in IP configuration?",o:["*It determines which portion of an IP address represents the network ID and which represents the host ID","It converts domain names into numeric IP addresses","It encrypts all network traffic passing through the router","It automatically assigns static IP addresses to wireless devices"],e:"Маска делит IP на часть сети и часть хоста. Перевод имён — это DNS."},
+{l:"l7",src:"lms",s:"Endterm",q:"Which network protocol is used to automatically assign an IP address to a computer on a network?",o:["*DHCP","APIPA","ICMP","FTP","SMTP"],e:"DHCP раздаёт IP автоматически. APIPA (169.254.x.x) ПК берёт сам, когда DHCP недоступен."},
+{l:"l7",src:"lms",s:"Endterm",q:"Which default TCP port is primarily used for HTTP web traffic?",o:["*Port 80","Port 21","Port 22","Port 443","Port 8443"],e:"80 — HTTP, 443 — HTTPS, 21 — FTP, 22 — SSH."},
+{l:"l7",src:"lms",s:"Endterm V2",q:"Which default TCP port is used by FTP for control and command transmission?",o:["*Port 21","Port 20","Port 80","Port 3389","Port 43"],e:"FTP: 21 — команды, 20 — данные. 3389 — RDP."},
+{l:"l7",src:"lms",s:"Quiz 7",q:"What is the purpose of testing network connectivity between two computers using the ping utility?",o:["*To verify connectivity between hosts","To update the local DNS cache","To measure download speeds of large files","To automatically assign IP addresses"],e:"ping проверяет, доходят ли пакеты до другого узла."},
+{l:"l7",src:"lms",s:"Quiz 7",q:"Which software combination is used in this practical task to set up and test the FTP server and client?",o:["*FileZilla Server and FileZilla Client","IIS Server and WinSCP","Nginx and FileZilla Server","Apache and FileZilla Client"],e:"На практике FTP поднимали в FileZilla Server и подключались FileZilla Client."},
+{l:"l7",src:"lms",s:"Quiz 7",q:"Which PowerShell command opens inbound traffic on TCP port 80 for the IIS web server?",o:["*New-NetFirewallRule -DisplayName \"HTTP\" -Direction Inbound -LocalPort 80 -Protocol TCP -Action Allow","Set-FirewallRule -Port 80 -Action Open","Open-Port -Port 80 -Protocol HTTP","Allow-NetFirewallRule -Port 80 -Protocol TCP"],code:true,e:"Настоящая команда начинается с New-NetFirewallRule. Остальные выдуманы."},
+{l:"l7",src:"lms",s:"Quiz 7",q:"What file name is conventionally used as the default landing page for a web server?",o:["*index.html","default.db","config.txt","main.exe"],e:"Сервер по умолчанию открывает index.html."},
+{l:"l7",src:"lms",s:"Quiz 7 · Endterm",q:"Why is accessing a partner's website using http://localhost from a separate computer unsuccessful?",o:["*Because it refers to the local machine","Because port 80 is reserved exclusively for system updates","Because IIS blocks local requests entirely","Because DHCP servers overwrite the loopback address","Because there is an AP isolation in the network"],e:"localhost = 127.0.0.1 = этот компьютер. На другом ПК вводят IP партнёра."},
+{l:"l7",src:"lms",s:"Quiz 7",q:"Which of the following components must be enabled in Windows \"Turn Windows features on or off\" to deploy a local web server?",o:["*Internet Information Services (IIS)","Simple Network Management Protocol","Telnet Client","FTP Publishing Service"],e:"IIS — встроенный веб-сервер Windows."},
+{l:"l7",src:"lms",s:"Quiz 7",q:"Why might a student fail to open a partner's IIS webpage over the local area network (LAN) by default?",o:["*Because Windows Firewall blocks incoming connections on port 80","Because IIS requires a paid commercial license","Because the local browser cache is full","Because DHCP leases expire every 60 seconds"],e:"Брандмауэр по умолчанию режет входящие на порт 80. Помогает New-NetFirewallRule."},
+{l:"l7",src:"lms",s:"Quiz 7 · Endterm V1",q:"What is the default root directory path for a standard local website hosted on Windows IIS?",o:["*C:\\inetpub\\wwwroot\\","C:\\www\\html\\","C:\\Windows\\Web\\","C:\\Apache\\htdocs\\","C:\\AppData\\IIS\\root\\"],code:true,e:"У IIS — inetpub\\wwwroot. htdocs — это Apache."},
+{l:"l7",src:"lms",s:"Quiz 7",q:"In FileZilla Server configuration, what setting must be configured under \"Mount points\" to allow a user to access files?",o:["*Setting the Virtual path to / and mapping it to a Native path folder","Creating a database schema connection","Allocating a static MAC address","Enabling HTTP proxy redirection"],e:"Virtual path — что видит пользователь (/). Native path — реальная папка на диске."},
+
+// l8 — OS & commands
+{l:"l8",src:"lms",s:"Quiz 8",q:"A user is trying to create a new Windows directory for storing files related to a new project. What is the best Windows command to select to do the job?",o:["*md","ping","nslookup","help","tracert"],e:"md (mkdir) — make directory."},
+{l:"l8",src:"lms",s:"Endterm",q:"A user is looking for a file but can not find it in the Document folder. The user wants to move to the Download directory to check there. What is the best Windows command to select to do the job?",o:["*cd","bootrec","ipconfig","diskpart","help"],e:"cd — change directory, перейти в другую папку."},
+{l:"l8",src:"lms",s:"Quiz 8",q:"A user needs to relocate a file from one Windows directory to another one. What is the best Windows command to select to do the job?",o:["*move","DISM","sfc","tasklist","history"],e:"move переносит файл."},
+{l:"l8",src:"lms",s:"Quiz 8",q:"A company has recently deployed Active Directory and a workstation cannot connect to a network resource. A technician modifies group policy settings. Which command should the technician use to make the workstation synchronize with the new settings?",o:["*gpupdate","runas","tasklist","gpresult","rstrui"],e:"gpupdate применяет политики. gpresult только показывает их."},
+{l:"l8",src:"lms",s:"Quiz 8",q:"A user is experiencing issues with system startup and with failing to open some files. The user wants to determine the source of any hard drive issues. What is the best Windows command to select to do the job?",o:["*chkdsk","cls","bootrec","ipconfig","diskpart"],e:"chkdsk проверяет диск на ошибки."},
+{l:"l8",src:"lms",s:"Quiz 8 · Endterm V1",q:"A user suspects someone has hacked into the PC and wants to verify activity on the PC by displaying all active TCP connections to the PC. What is the best Windows command to select to do the job?",o:["*netstat","diskpart","bootrec","pacman","regsrv32"],e:"netstat показывает все активные соединения."},
+{l:"l8",src:"lms",s:"Quiz 8",q:"A technician is troubleshooting a PC. The display shows an \"Invalid Boot Disk\" error after the POST. What is a probable cause?",o:["*The MBR is corrupted.","The PC does not have a floppy drive or the floppy drive is broken.","The date and time have been changed in the BIOS and do not reflect the correct time and date.","The PC has a BIOS password.","A process is using most of the CPU resources."],e:"В MBR хранится загрузчик. Он повреждён — ОС не находится. Чинят через bootrec."},
+{l:"l8",src:"lms",s:"Quiz 8 · Endterm",q:"Which file system is the primary file system used by Apple in current Macintosh computers?",o:["*APFS","ext2","ext3","CDFS","HFS+"],e:"APFS — современная ФС Mac. HFS+ — старая."},
+{l:"l8",src:"lms",s:"Quiz 8",q:"An administrator is re-imaging a large number of Mac OS X machines. What built-in tool or command can be used to remotely boot the computers?",o:["*Netboot","Finder","mstsc","Time Machine"],e:"Netboot — загрузка Mac по сети. mstsc — RDP в Windows."},
+{l:"l8",src:"lms",s:"Quiz 8 · Endterm V1",q:"What command is used to open a text editor in a Linux system?",o:["*vim","ifconfig","ls","grep","echo"],e:"vim (и nano) — текстовые редакторы."},
+{l:"l8",src:"lms",s:"Quiz 8",q:"A Linux administrator wants to backup current files in a data directory and store them in a new directory on another disk. Which two commands would be needed? (Choose two.)",o:["*mkdir","*cp","mv","rm","cd"],e:"mkdir создаёт папку, cp копирует. mv перемещает, а для бэкапа нужна копия."},
+{l:"l8",src:"lms",s:"Endterm",q:"A Linux administrator wants to backup current files in a data directory and store them in a new directory on another disk and check if it's done correctly. Which three commands would be needed? (Choose 3.)",o:["*mkdir","*cp","*ls","root","mv","rm","sudo","rm -rf /*"],e:"mkdir — создать папку, cp — скопировать, ls — проверить. На эндтерме mv вместо cp стоило баллов."},
+{l:"l8",src:"lms",s:"Endterm",q:"Which three components are used to assign file and directory permissions in Linux systems? (Choose 3.)",o:["*owner","*group","*all users","root","super group","admin group","all groups","sudo"],e:"Права задаются для owner, group и others (all users)."},
+{l:"l8",src:"lms",s:"Endterm (фото)",q:"A file called new_resume has the following file permissions: rw-r--r--. Which octal (numeric) representation corresponds to these permissions?",o:["*644","650","651","700","667"],code:true,e:"r=4, w=2, x=1. rw- = 6, r-- = 4, r-- = 4, итого 644."},
+{l:"l8",src:"lms",s:"Endterm V1 (настоящий)",q:"A file called new_resume has the following file permissions: rw-r-x--x. Which octal (numeric) representation corresponds to these permissions?",o:["*651","644","650","700","667"],code:true,e:"rw- = 6, r-x = 4+1 = 5, --x = 1, итого 651. Читай права по три символа."},
+{l:"l8",src:"lms",s:"Endterm",q:"What term is used to describe a logical drive that can be formatted to store data?",o:["*partition","volume","cluster","track","sector"],e:"По ключу преподавателя (и Cisco) — partition. Volume на эндтерме не засчитали."},
+{l:"l8",src:"lms",s:"Endterm V1",q:"Which condition is required when planning to install Windows on a GPT disk?",o:["*The computer must be UEFI-based.","Only one primary partition can contain an OS.","The maximum partition size cannot exceed 2 TB.","The maximum number of primary partitions that can co-exist is 4.","The computer must be APFS-based."],e:"Загрузка Windows с GPT требует UEFI. Ограничения 2 ТБ и 4 раздела — это MBR."},
+{l:"l8",src:"lms",s:"Endterm V2",q:"Which method is commonly used to remove the default restrictions added to mobile operating systems?",o:["*rooting","rootkit execution","device update","resetting","system backup"],e:"Rooting (Android) и jailbreak (iOS) снимают ограничения."},
+{l:"l8",src:"ite",s:"ITE 8 · Mod 10",q:"Which type of Windows installation erases the drive and installs a fresh OS?",o:["*clean install","upgrade","repair install","multiboot"],e:"Clean install — с нуля. Upgrade сохраняет программы и файлы."},
+{l:"l8",src:"ite",s:"ITE 8 · Mod 11",q:"Which Windows tool is used to view hardware, update a driver or roll back a driver?",o:["*Device Manager","Task Manager","Event Viewer","Disk Management"],e:"Device Manager — устройства и драйверы."},
+{l:"l8",src:"ite",s:"ITE 8 · Mod 11",q:"Which Windows tool shows the history of system, security and application logs?",o:["*Event Viewer","Device Manager","Task Manager","System Information"],e:"Event Viewer — журналы событий."},
+{l:"l8",src:"ite",s:"ITE 8 · Mod 11",q:"Which Windows command scans and repairs protected system files?",o:["*sfc /scannow","chkdsk","format","diskpart"],code:true,e:"sfc — System File Checker. chkdsk проверяет диск, а не системные файлы."},
+{l:"l8",src:"ite",s:"ITE 8 · Mod 11",q:"Which utility (System Configuration) is used to choose boot options and services that load when Windows starts?",o:["*msconfig","regedit","netstat","gpresult"],e:"msconfig — конфигурация загрузки. regedit — реестр."},
+{l:"l8",src:"ite",s:"ITE 8 · Mod 10",q:"Which Windows file system supports file permissions and encryption?",o:["*NTFS","FAT32","exFAT","CDFS"],e:"NTFS — права и шифрование. FAT32 — без прав, файл до 4 ГБ."},
+{l:"l8",src:"ite",s:"ITE 8 · Mod 10",q:"What is the maximum size of a single file on FAT32?",o:["*4 GB","2 TB","16 GB","256 MB"],e:"На FAT32 нельзя записать файл больше 4 ГБ."},
+{l:"l8",src:"ite",s:"ITE 8 · Mod 12",q:"Which Linux command changes file permissions?",o:["*chmod","chown","sudo","pwd"],e:"chmod — права, chown — владелец."},
+{l:"l8",src:"ite",s:"ITE 8 · Mod 12",q:"Which Linux command runs another command with root (administrator) privileges?",o:["*sudo","chmod","ls","grep"],e:"sudo — выполнить от имени root."},
+{l:"l8",src:"ite",s:"ITE 8 · Mod 12",q:"Which Linux command shows the current working directory?",o:["*pwd","ls","cd","man"],e:"pwd = print working directory."},
+{l:"l8",src:"ite",s:"ITE 8 · Mod 12",q:"Which mobile operating system is open source?",o:["*Android","iOS","iPadOS","watchOS"],e:"Android — открытый. iOS — закрытый (Apple)."},
+
+// ite — security, laptops, professional
+{l:"ite",src:"lms",s:"Endterm V1 (фото)",q:"The IT department is reporting that a company web server is receiving an abnormally high number of web page requests from different locations simultaneously. Which type of security attack is occurring?",o:["*DDoS","spyware","social engineering","adware","phishing"],e:"Много запросов с разных мест одновременно — Distributed Denial of Service."},
+{l:"ite",src:"lms",s:"Endterm V1 · V2",q:"Which type of security threat can be transferred through email and is used to gain sensitive information by recording the keystrokes of the email recipient?",o:["*virus","adware","Trojan","worm","grayware"],e:"По ключу Cisco и эндтерма — virus. Trojan маскируется под нормальную программу, worm сам расползается по сети."},
+{l:"ite",src:"ite",s:"ITE 8 · Mod 13",q:"An email that looks like it is from a bank asks the user to enter their password on a website. Which attack is this?",o:["*phishing","DDoS","worm","tailgating"],e:"Phishing — поддельное письмо, выманивает данные."},
+{l:"ite",src:"ite",s:"ITE 8 · Mod 13",q:"Which malware encrypts the user's files and demands payment to unlock them?",o:["*ransomware","adware","spyware","rootkit"],e:"Ransomware — вымогатель."},
+{l:"ite",src:"ite",s:"ITE 8 · Mod 13",q:"Which malware hides deep in the operating system and is very hard to detect with normal antivirus?",o:["*rootkit","adware","grayware","worm"],e:"Rootkit прячется в ядре и системных файлах."},
+{l:"ite",src:"ite",s:"ITE 8 · Mod 13",q:"Which malware spreads across the network by itself without attaching to another program?",o:["*worm","virus","Trojan","adware"],e:"Worm сам себя копирует по сети. Virus цепляется к файлу."},
+{l:"ite",src:"ite",s:"ITE 8 · Mod 13",q:"An unauthorized person follows an employee through a secured door. What is this called?",o:["*tailgating","phishing","shoulder surfing","spoofing"],e:"Tailgating — пройти следом. Shoulder surfing — подглядывать через плечо."},
+{l:"ite",src:"ite",s:"ITE 8 · Mod 13",q:"Which Windows feature encrypts an entire drive?",o:["*BitLocker","EFS","UAC","Windows Update"],e:"BitLocker шифрует весь диск. EFS — отдельные файлы и папки."},
+{l:"ite",src:"ite",s:"ITE 8 · Mod 4",q:"What is the first step of the troubleshooting process?",o:["*Identify the problem","Establish a theory of probable cause","Test the theory to determine the cause","Document findings, actions, and outcomes"],e:"Сначала определи проблему (расспроси пользователя), потом выдвигай теорию."},
+{l:"ite",src:"ite",s:"ITE 8 · Mod 4",type:"order",q:"Put the six steps of the troubleshooting process in order.",items:["Identify the problem","Establish a theory of probable cause","Test the theory to determine the cause","Establish a plan of action and implement the solution","Verify full system functionality and implement preventive measures","Document findings, actions, and outcomes"],e:"Определить → теория → проверка → план и решение → проверка системы → документирование."},
+{l:"ite",src:"ite",s:"ITE 8 · Mod 7",q:"Which wireless technology is used for contactless payments over a very short distance?",o:["*NFC","Bluetooth","Wi-Fi","Infrared"],e:"NFC работает на расстоянии нескольких сантиметров."},
+{l:"ite",src:"ite",s:"ITE 8 · Mod 7",q:"Which email protocol keeps messages on the server and synchronizes them across devices?",o:["*IMAP","POP3","SMTP","SNMP"],e:"POP3 скачивает и обычно удаляет письма с сервера, SMTP отправляет."},
+{l:"ite",src:"ite",s:"ITE 8 · Mod 7",q:"Which laptop key is used together with F1–F12 to change brightness, volume or turn Wi-Fi on and off?",o:["*Fn","Ctrl","Alt","Tab"],e:"Fn включает вторые функции клавиш F1–F12."},
+{l:"ite",src:"ite",s:"ITE 8 · Mod 14",q:"Which of the following is an example of PII?",o:["*A customer's full name and home address","The CPU model of a PC","The default gateway address","The Wi-Fi channel number"],e:"PII — данные, по которым можно определить человека."},
+{l:"ite",src:"ite",s:"ITE 8 · Mod 14",q:"A customer is angry and explains a problem with their computer. What should the technician do?",o:["*Let the customer explain the problem without interrupting","Tell the customer that they caused the problem","Use a lot of technical jargon","Put the customer on hold for a long time"],e:"Выслушать, не перебивать, говорить вежливо и без жаргона."},
+{l:"ite",src:"ite",s:"ITE 8 · Mod 14",q:"In computer forensics, what does the chain of custody document?",o:["*Who handled the evidence, when and how, so it can be used in court","The list of installed software","The network topology","The backup schedule"],e:"Chain of custody — кто, когда и как обращался с уликами."}
+];
+Q.forEach((q,i)=>{ q.id = "q"+i; });
+
+/* ===================== HELPERS & STORAGE ===================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+const clean = s => s.replace(/^\*/,"");
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const kind = q => q.type || (q.o.filter(x=>x[0]==="*").length>1 ? "multi" : "single");
+const rightOf = q => q.o.filter(x=>x[0]==="*").map(clean);
+const answerText = q => { const k=kind(q); if(k==="order") return q.items.join(" → "); if(k==="match") return q.pairs.map(p=>p[0]+" → "+p[1]).join("; "); return rightOf(q).join(", "); };
+const LETTERS = "ABCDEFGH";
+const LS = {
+  get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+};
+let wrong = new Set(LS.get("coa2Wrong",[]));
+let best = LS.get("coa2Best",{});
+let readSet = new Set(LS.get("coa2Read",[]));
+const saveAll = () => { LS.set("coa2Wrong",[...wrong]); LS.set("coa2Best",best); LS.set("coa2Read",[...readSet]); };
+const byLesson = l => Q.filter(q=>q.l===l);
+function examPool(key){
+  if (key==="mid") return Q.filter(q=>["l1","l2","l3","l4"].includes(q.l));
+  if (key==="end") return Q.filter(q=>["l5","l6","l7","l8"].includes(q.l) || /Endterm/.test(q.s));
+  return Q.slice();
+}
+
+/* ===================== VIEWS & ROUTING ===================== */
+const VIEWS = ["course","lesson","run","train","cheat"];
+function showView(v){
+  VIEWS.forEach(x=>{ $("#v-"+x).hidden = x!==v; });
+  const tab = (v==="train"||v==="cheat") ? v : "course";
+  document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected", t.dataset.go===tab));
+  if (v==="course") renderCourse();
+  if (v==="train") renderTrain();
+  if (v==="run") renderRun();
+}
+function route(){
+  const h = location.hash.slice(1) || "course";
+  if (h.indexOf("lesson-")===0 && LESSONS[h.slice(7)]) { renderLesson(h.slice(7)); showView("lesson"); }
+  else if (h==="train" || h==="cheat") showView(h);
+  else if (h==="quiz" && S) showView("run");
+  else showView("course");
+  window.scrollTo({top:0});
+}
+window.addEventListener("hashchange", route);
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{ location.hash = t.dataset.go; }));
+
+/* ===================== COURSE MAP ===================== */
+function lessonCard(l){
+  const L = LESSONS[l], n = byLesson(l).length, b = best["l:"+l];
+  const pills = [];
+  if (readSet.has(l)) pills.push('<span class="pill good">Прочитано</span>');
+  if (b!=null) pills.push('<span class="pill '+(b>=80?'good':'warn')+'">Квиз: '+b+'%</span>');
+  return '<article class="lcard"><p class="label">'+esc(L.wk+" · "+L.quiz)+'</p><h3>'+esc(L.title)+'</h3><p class="sub" style="margin:0">'+n+' вопросов</p>'+(pills.length?'<div class="stat">'+pills.join("")+'</div>':'')+
+    '<div class="row"><a class="btn small" href="#lesson-'+l+'">Читать</a><button type="button" class="btn ghost small" data-quiz="'+l+'">Квиз</button></div></article>';
+}
+function examCard(x){
+  const b = best["x:"+x.key];
+  return '<article class="lcard exam"><p class="label">Пробный тест · '+x.n+' вопр. · '+x.min+' мин</p><h3>'+esc(x.title)+'</h3><p class="sub" style="margin:0">'+esc(x.desc)+'</p>'+
+    (b!=null?'<div class="stat"><span class="pill '+(b>=80?'good':'warn')+'">Лучший: '+b+'%</span></div>':'')+
+    '<div class="row"><button type="button" class="btn small" data-exam="'+x.key+'">Начать</button></div></article>';
+}
+function renderCourse(){
+  const read = ORDER.filter(l=>readSet.has(l)).length;
+  let h = '<h1>Курс COA по неделям</h1><p class="sub">Читай тему недели, проходи её квиз, потом пробный тест блока. Вопросы — из квизов в LMS, мидтерма, эндтерма и IT Essentials 8.</p>';
+  h += '<div class="panel hero"><p><b>Final Test</b>: 40 вопросов, 50 минут, одна попытка, на компьютере.</p><p class="sub" style="margin:0">Прочитано тем: '+read+' из '+ORDER.length+' · Ошибок на повтор: '+wrong.size+'</p>'+
+       '<div class="row" style="margin-top:10px"><button type="button" class="btn" data-exam="fin">Пробный финал</button><button type="button" class="btn ghost" data-wrong="1"'+(wrong.size?'':' disabled')+'>Повторить ошибки ('+wrong.size+')</button></div></div>';
+  BLOCKS.forEach(B=>{
+    h += '<h2>'+esc(B.title)+'</h2><p class="sub">'+esc(B.sub)+'</p><div class="grid">'+B.lessons.map(lessonCard).join("")+examCard(B.exam)+'</div>';
+  });
+  $("#v-course").innerHTML = h;
+}
+document.addEventListener("click", e=>{
+  const qz = e.target.closest("[data-quiz]");
+  if (qz){ const l=qz.dataset.quiz; startSession({title:LESSONS[l].wk+" · "+LESSONS[l].short, list:byLesson(l), mode:"practice", key:"l:"+l}); return; }
+  const ex = e.target.closest("[data-exam]");
+  if (ex){ const x = BLOCKS.map(B=>B.exam).find(y=>y.key===ex.dataset.exam); startSession({title:x.title, list:examPool(x.key), n:x.n, mode:"exam", minutes:x.min, key:"x:"+x.key}); return; }
+  const wr = e.target.closest("[data-wrong]");
+  if (wr && wrong.size){ startSession({title:"Мои ошибки", list:Q.filter(q=>wrong.has(q.id)), mode:"practice"}); }
+});
+
+/* ===================== LESSON PAGE ===================== */
+function renderLesson(l){
+  const L = LESSONS[l], i = ORDER.indexOf(l), prev = ORDER[i-1], next = ORDER[i+1], n = byLesson(l).length;
+  readSet.add(l); saveAll();
+  let h = '<a class="back" href="#course">← Все темы</a>';
+  h += '<p class="label" style="margin-top:14px">'+esc(L.wk+" · "+L.quiz)+'</p><h1 style="margin-top:0">'+esc(L.title)+'</h1>';
+  h += '<article class="lesson">'+L.html+'</article>';
+  h += '<div class="panel hero"><p><b>Проверь себя</b>: '+n+' вопросов по этой теме, с ответами и объяснениями.</p><div class="row" style="margin-top:10px"><button type="button" class="btn" data-quiz="'+l+'">Пройти квиз</button></div></div>';
+  h += '<div class="row" style="justify-content:space-between;margin-top:18px">'+(prev?'<a href="#lesson-'+prev+'">← '+esc(LESSONS[prev].short)+'</a>':'<span></span>')+(next?'<a href="#lesson-'+next+'">'+esc(LESSONS[next].short)+' →</a>':'')+'</div>';
+  $("#v-lesson").innerHTML = h;
+}
+
+/* ===================== QUIZ / EXAM RUNNER ===================== */
+let S = null, timerId = null;
+function makeOpts(q){ const k=kind(q); if(k==="order") return shuffle(q.items); if(k==="match") return shuffle([...new Set(q.pairs.map(p=>p[1]).concat(q.extra||[]))]); return shuffle(q.o.map(clean)); }
+function initAns(q){ return kind(q)==="match" ? q.pairs.map(()=>"") : []; }
+function startSession(o){
+  clearInterval(timerId);
+  let list = shuffle(o.list); if (o.n) list = list.slice(0,o.n);
+  S = {cfg:o, title:o.title, mode:o.mode, key:o.key, list, i:0, opts:list.map(makeOpts), ans:list.map(initAns), res:list.map(()=>null), done:false, confirm:false, deadline:o.minutes?Date.now()+o.minutes*60000:null};
+  if (S.deadline) timerId = setInterval(tick, 1000);
+  if (location.hash!=="#quiz") location.hash = "quiz"; else { showView("run"); window.scrollTo({top:0}); }
+}
+const fmt = ms => { const s=Math.max(0,Math.ceil(ms/1000)); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); };
+function tick(){
+  if (!S || S.done || !S.deadline){ clearInterval(timerId); return; }
+  const left = S.deadline - Date.now();
+  if (left<=0){ finishSession(); return; }
+  const el = document.getElementById("timer");
+  if (el){ el.textContent = fmt(left); el.classList.toggle("low", left<5*60000); }
+}
+function evalQ(q,ans,opts){
+  const k=kind(q);
+  if (k==="order") return ans.length===q.items.length && ans.every((oi,i)=>opts[oi]===q.items[i]);
+  if (k==="match") return q.pairs.every((p,j)=>ans[j]===p[1]);
+  const r=new Set(rightOf(q)), ch=new Set(ans.map(i=>opts[i]));
+  return ch.size===r.size && [...ch].every(x=>r.has(x));
+}
+const isAnswered = (q,ans) => kind(q)==="match" ? ans.some(Boolean) : ans.length>0;
+function userText(q,ans,opts){
+  const k=kind(q);
+  if (k==="match") return q.pairs.map((p,j)=>p[0]+" → "+(ans[j]||"—")).join("; ");
+  if (k==="order") return ans.length ? ans.map(i=>opts[i]).join(" → ") : "—";
+  return ans.length ? ans.map(i=>opts[i]).join(", ") : "—";
+}
+
+function renderRun(){
+  const box = $("#run");
+  if (!S){ box.innerHTML = '<p class="empty">Тест не запущен. <a href="#course">К темам</a></p>'; return; }
+  if (S.done){ renderResults(); return; }
+  const N = S.list.length, q = S.list[S.i], k = kind(q), ans = S.ans[S.i], opts = S.opts[S.i];
+  const locked = S.mode==="practice" && S.res[S.i]!==null;
+  const answered = S.list.filter((qq,j)=>isAnswered(qq,S.ans[j])).length;
+  const done = S.res.filter(x=>x!==null).length, right = S.res.filter(x=>x===true).length;
+  const L = LESSONS[q.l];
+  let h = '<div class="runhead"><div><p class="label">'+(S.mode==="exam"?"Пробный тест":"Квиз")+'</p><h2 class="runtitle">'+esc(S.title)+'</h2></div>'+
+          (S.deadline?'<div class="timer" id="timer" aria-live="off">'+fmt(S.deadline-Date.now())+'</div>':'')+'</div>';
+  h += '<div class="meta"><span>Вопрос '+(S.i+1)+' из '+N+'</span><span>'+(S.mode==="exam"?'Отвечено: '+answered+' / '+N:'Верно: '+right+' / '+done)+'</span></div>';
+  h += '<div class="progress" aria-hidden="true"><i style="width:'+Math.round((S.mode==="exam"?answered:done)/N*100)+'%"></i></div>';
+  h += '<div class="badges"><span class="badge">'+esc(L.wk+" · "+L.short)+'</span><span class="badge src">'+esc(q.s)+'</span></div>';
+  h += '<p class="q">'+esc(q.q)+'</p>';
+  if (k==="multi") h += '<p class="hint">Выбери '+rightOf(q).length+' ответа</p>';
+  if (k==="order") h += '<p class="hint">Нажимай элементы по порядку. Нажми на элемент сверху, чтобы убрать его.</p>';
+  if (k==="match") h += '<p class="hint">Выбери пару для каждой строки</p>';
+
+  if (k==="single" || k==="multi"){
+    const r = rightOf(q);
+    h += '<div class="opts">'+opts.map((o,i)=>{
+      let c = "opt";
+      if (locked){ if (r.includes(o)) c+=" ok"; else if (ans.includes(i)) c+=" bad"; }
+      else if (ans.includes(i)) c+=" sel";
+      return '<button type="button" class="'+c+'" data-act="opt" data-i="'+i+'"'+(locked?' disabled':'')+'><span class="L">'+LETTERS[i]+'</span><span class="'+(q.code?'code':'')+'">'+esc(o)+'</span></button>';
+    }).join("")+'</div>';
+  } else if (k==="order"){
+    h += '<div class="built">'+(ans.length?ans.map((oi,j)=>'<button type="button" class="piece" data-act="unbuild" data-j="'+j+'"'+(locked?' disabled':'')+'><span class="k">'+(j+1)+'</span>'+esc(opts[oi])+'</button>').join(""):'<span class="empty">Здесь будет твой порядок</span>')+'</div>';
+    const left = opts.map((t,i)=>i).filter(i=>!ans.includes(i));
+    h += '<div class="bank">'+(left.length?left.map(i=>'<button type="button" class="piece" data-act="build" data-i="'+i+'"'+(locked?' disabled':'')+'>'+esc(opts[i])+'</button>').join(""):'<span class="empty">Все элементы расставлены</span>')+'</div>';
+  } else if (k==="match"){
+    h += q.pairs.map((p,j)=>{
+      const st = locked ? (ans[j]===p[1]?" ok":" bad") : "";
+      return '<div class="mrow'+st+'"><label for="m'+j+'">'+esc(p[0])+'</label><select id="m'+j+'" data-j="'+j+'"'+(locked?' disabled':'')+'><option value="">Выбери…</option>'+opts.map(r=>'<option'+(ans[j]===r?' selected':'')+'>'+esc(r)+'</option>').join("")+'</select></div>';
+    }).join("");
+  }
+
+  if (locked){
+    const ok = S.res[S.i];
+    let a;
+    if (k==="order") a = '<ol class="olist">'+q.items.map(t=>'<li>'+esc(t)+'</li>').join("")+'</ol>';
+    else if (k==="match") a = '<ol class="olist">'+q.pairs.map(p=>'<li>'+esc(p[0])+' → <b>'+esc(p[1])+'</b></li>').join("")+'</ol>';
+    else a = '<b class="'+(q.code?'code':'')+'">'+esc(rightOf(q).join(", "))+'</b>';
+    h += '<div class="fb'+(ok?'':' bad')+'" role="status"><span class="t">'+(ok?'Верно':'Неверно')+'</span>'+(ok?'':'Правильно: ')+a+'<p>'+esc(q.e)+'</p></div>';
+  }
+
+  h += '<div class="actions">';
+  if (S.mode==="practice"){
+    if (locked) h += '<button type="button" class="btn" data-act="next">'+(S.i+1<N?'Следующий':'Итог')+'</button>';
+    else {
+      if (k!=="single"){
+        const ready = k==="match" ? ans.every(Boolean) : (k==="order" ? ans.length===q.items.length : ans.length>0);
+        h += '<button type="button" class="btn" data-act="check"'+(ready?'':' disabled')+'>Проверить</button>';
+      }
+      h += '<button type="button" class="btn ghost" data-act="skip">Не знаю</button>';
+    }
+    h += '<button type="button" class="btn ghost" data-act="finish">Закончить</button>';
+  } else {
+    if (S.i>0) h += '<button type="button" class="btn ghost" data-act="prev">← Назад</button>';
+    if (S.i+1<N) h += '<button type="button" class="btn" data-act="next">Далее →</button>';
+    h += '<button type="button" class="btn '+(S.i+1<N?'ghost':'')+'" data-act="finish">Завершить тест</button>';
+  }
+  h += '</div>';
+  if (S.confirm){
+    const left = N - answered;
+    h += '<div class="warnbar">Без ответа: '+left+'. Всё равно завершить? <div class="row" style="margin-top:8px"><button type="button" class="btn small" data-act="finish-yes">Да, завершить</button><button type="button" class="btn ghost small" data-act="finish-no">Вернуться</button></div></div>';
+  }
+  box.innerHTML = h;
+}
+
+$("#run").addEventListener("click", e=>{
+  const t = e.target.closest("[data-act]"); if (!t || !S || S.done) { const r=e.target.closest("[data-res]"); if(r) resultsAction(r.dataset.res); return; }
+  const q = S.list[S.i], k = kind(q), ans = S.ans[S.i];
+  const locked = S.mode==="practice" && S.res[S.i]!==null;
+  switch (t.dataset.act){
+    case "opt": {
+      if (locked) return;
+      const i = +t.dataset.i;
+      if (k==="single"){ S.ans[S.i]=[i]; if (S.mode==="practice") return check(); }
+      else { const p = ans.indexOf(i); p>=0 ? ans.splice(p,1) : ans.push(i); }
+      break;
+    }
+    case "build": if (!locked) ans.push(+t.dataset.i); break;
+    case "unbuild": if (!locked) ans.splice(+t.dataset.j,1); break;
+    case "check": return check();
+    case "skip": S.res[S.i]=false; wrong.add(q.id); saveAll(); break;
+    case "next": if (S.i+1<S.list.length){ S.i++; S.confirm=false; window.scrollTo({top:0}); } else return finishSession(); break;
+    case "prev": if (S.i>0){ S.i--; S.confirm=false; window.scrollTo({top:0}); } break;
+    case "finish": {
+      const unanswered = S.mode==="exam" ? S.list.filter((qq,j)=>!isAnswered(qq,S.ans[j])).length : 0;
+      if (unanswered>0 && !S.confirm){ S.confirm=true; break; }
+      return finishSession();
+    }
+    case "finish-yes": return finishSession();
+    case "finish-no": S.confirm=false; break;
+  }
+  renderRun();
+});
+$("#run").addEventListener("change", e=>{
+  const s = e.target.closest("select[data-j]"); if (!s || !S) return;
+  S.ans[S.i][+s.dataset.j] = s.value; renderRun();
+});
+function check(){
+  const q=S.list[S.i];
+  const ok = evalQ(q,S.ans[S.i],S.opts[S.i]);
+  S.res[S.i]=ok;
+  ok ? wrong.delete(q.id) : wrong.add(q.id);
+  saveAll(); renderRun();
+}
+function finishSession(){
+  if (!S || S.done) return;
+  clearInterval(timerId);
+  if (S.mode==="exam"){
+    S.res = S.list.map((q,j)=>evalQ(q,S.ans[j],S.opts[j]));
+    S.list.forEach((q,j)=>{ S.res[j] ? wrong.delete(q.id) : wrong.add(q.id); });
+  }
+  S.done = true;
+  const counted = S.mode==="exam" ? S.list.length : S.res.filter(x=>x!==null).length;
+  const right = S.res.filter(x=>x===true).length;
+  S.score = {right, counted, pct: counted?Math.round(right/counted*100):0};
+  if (S.key && counted===S.list.length) best[S.key] = Math.max(best[S.key]||0, S.score.pct);
+  saveAll();
+  renderRun(); window.scrollTo({top:0});
+}
+function renderResults(){
+  const sc = S.score, N = S.list.length;
+  const items = S.list.map((q,j)=>({q,j,ok:S.res[j]})).filter(x=>x.ok!==null);
+  const bad = items.filter(x=>!x.ok), good = items.filter(x=>x.ok);
+  let h = '<p class="label">'+(S.mode==="exam"?"Результат пробного теста":"Итог квиза")+'</p><h2 class="runtitle">'+esc(S.title)+'</h2>';
+  h += '<p class="big">'+sc.right+' / '+sc.counted+'</p><p>'+sc.pct+'% верно'+(S.mode==="exam"?' · примерно '+Math.round(sc.pct)+' баллов из 100':'')+(sc.counted<N?' · отвечено '+sc.counted+' из '+N:'')+'</p>';
+  h += '<div class="actions"><button type="button" class="btn" data-res="again">Ещё раз</button>'+(bad.length?'<button type="button" class="btn ghost" data-res="errors">Повторить ошибки ('+bad.length+')</button>':'')+'<a class="btn ghost" href="#course">К темам</a></div>';
+  const card = (x)=>'<div class="rev'+(x.ok?'':' bad')+'"><div class="qq">'+esc(x.q.q)+'</div>'+(S.mode==="exam"||!x.ok?'<div class="yy">Твой ответ: '+esc(userText(x.q,S.ans[x.j],S.opts[x.j]))+'</div>':'')+'<div class="aa'+(x.q.code?' code':'')+'"><b>'+(x.ok?'✓ ':'✗ Правильно: ')+'</b>'+esc(answerText(x.q))+'</div><div class="ee">'+esc(x.q.e)+'</div></div>';
+  if (bad.length) h += '<h2>Ошибки</h2>'+bad.map(card).join("");
+  if (S.mode==="exam" && good.length) h += '<h2>Верно</h2>'+good.map(card).join("");
+  $("#run").innerHTML = h;
+}
+function resultsAction(a){
+  if (!S) return;
+  if (a==="again") startSession(S.cfg);
+  if (a==="errors"){ const list = S.list.filter((q,j)=>S.res[j]===false); startSession({title:"Ошибки: "+S.title, list, mode:"practice"}); }
+}
+
+document.addEventListener("keydown", e=>{
+  if ($("#v-run").hidden || !S || S.done) return;
+  const tag = e.target.tagName; if (tag==="INPUT"||tag==="SELECT"||tag==="TEXTAREA") return;
+  const q=S.list[S.i], k=kind(q);
+  if (/^[1-8]$/.test(e.key) && (k==="single"||k==="multi")){
+    const b = document.querySelector('.opt[data-i="'+(+e.key-1)+'"]'); if (b && !b.disabled){ b.click(); }
+  } else if (e.key==="Enter"){
+    const b = document.querySelector('[data-act="check"]:not([disabled])') || document.querySelector('[data-act="next"]');
+    if (b){ e.preventDefault(); b.click(); }
+  }
+});
+
+/* ===================== FREE TRAINING ===================== */
+const T = { lessons:new Set(ORDER), src:"all" };
+function trainPool(onlyWrong){ return Q.filter(q=>T.lessons.has(q.l) && (T.src==="all"||q.src===T.src) && (!onlyWrong||wrong.has(q.id))); }
+function renderTrain(){
+  const tc = $("#topicChips"); tc.innerHTML = "";
+  const all = T.lessons.size===ORDER.length;
+  const mk = (label, pressed, fn, n) => { const b=document.createElement("button"); b.type="button"; b.className="chip"; b.setAttribute("aria-pressed",pressed); b.innerHTML=esc(label)+(n!=null?'<span class="n">'+n+'</span>':''); b.onclick=fn; return b; };
+  tc.appendChild(mk("Все", all, ()=>{ T.lessons=new Set(ORDER); renderTrain(); }));
+  ORDER.forEach(l=>{
+    const n = Q.filter(q=>q.l===l && (T.src==="all"||q.src===T.src)).length;
+    tc.appendChild(mk(LESSONS[l].wk.replace("Неделя ","Нед. ")+" · "+LESSONS[l].short, !all && T.lessons.has(l), ()=>{
+      if (all) T.lessons = new Set([l]);
+      else if (T.lessons.has(l)){ T.lessons.delete(l); if (!T.lessons.size) T.lessons = new Set(ORDER); }
+      else T.lessons.add(l);
+      renderTrain();
+    }, n));
+  });
+  const sc = $("#srcChips"); sc.innerHTML = "";
+  [["all","Все"],["lms","Из LMS и экзаменов"],["ite","IT Essentials (мои)"]].forEach(([k,v])=>sc.appendChild(mk(v, T.src===k, ()=>{ T.src=k; renderTrain(); })));
+  const n = trainPool(false).length, w = trainPool(true).length;
+  $("#poolInfo").textContent = "В выборке: "+n+" вопр. · Из них в ошибках: "+w;
+  $("#trainWrong").disabled = !w;
+  $("#resetWrong").disabled = !wrong.size;
+}
+$("#trainStart").onclick = ()=>startSession({title:"Свободная тренировка", list:trainPool(false), mode:"practice"});
+$("#trainWrong").onclick = ()=>startSession({title:"Мои ошибки", list:trainPool(true), mode:"practice"});
+$("#resetWrong").onclick = ()=>{ wrong = new Set(); saveAll(); renderTrain(); };
+
+/* ===================== CHEAT SHEET ===================== */
+const FACTS = [
+ ["Порты", [["20/21","FTP (21 — команды)"],["22","SSH"],["23","Telnet"],["25","SMTP"],["53","DNS"],["67/68","DHCP"],["80","HTTP"],["110","POP3"],["143","IMAP"],["443","HTTPS"],["3389","RDP"]]],
+ ["Адреса", [["32 бита","IPv4"],["128 бит","IPv6"],["127.0.0.1","loopback, localhost"],["169.254.x.x","APIPA — DHCP не ответил"],["10 / 172.16–31 / 192.168","частные адреса"],["/24","255.255.255.0, класс C"]]],
+ ["T568B и F_PANEL", [["1–2","White-Orange, Orange"],["3–4","White-Green, Blue"],["5–6","White-Blue, Green"],["7–8","White-Brown, Brown"],["1/3","HDD LED"],["2/4","POWER LED"],["5/7","RESET SW"],["6/8","POWER SW"]]],
+ ["Лазерная печать", [["1","Processing"],["2","Charging"],["3","Exposing"],["4","Developing — тонер на барабан"],["5","Transferring — на бумагу"],["6","Fusing — запекание"],["7","Cleaning"]]],
+ ["Windows", [["ipconfig","IP-настройки (/renew, /release)"],["ping","проверка связи"],["tracert","путь до узла"],["netstat","активные соединения"],["nslookup","проверка DNS"],["md / cd / move","папка / перейти / переместить"],["chkdsk","проверка диска"],["sfc /scannow","системные файлы"],["gpupdate","применить политики"],["bootrec","починить загрузку"]]],
+ ["Linux", [["ls / pwd / cd","список / где я / перейти"],["mkdir / cp / mv / rm","создать / копировать / переместить / удалить"],["vim","редактор"],["chmod / chown","права / владелец"],["sudo","от имени root"],["r=4 w=2 x=1","rw-r--r-- = 644, rw-r-x--x = 651"]]],
+ ["Виртуализация и облако", [["Type 1","на сервер: ESXi, Hyper-V"],["Type 2","поверх ОС: VirtualBox, Workstation"],["Public / Private","для всех / одна организация"],["Hybrid / Community","2+ облака / общая задача"],["SaaS / PaaS / IaaS","ПО / платформа / инфраструктура"]]],
+ ["Диски", [["RAID 0","чередование, без защиты"],["RAID 1","зеркало"],["RAID 5","чётность, от 3 дисков"],["RAID 10","от 4 дисков"],["GPT","нужен UEFI"],["MBR","до 2 ТБ, 4 основных раздела"],["NTFS / FAT32","права / файл до 4 ГБ"]]]
+];
+$("#facts").innerHTML = FACTS.map(([h,rows])=>'<div class="fact"><h3>'+esc(h)+'</h3><table>'+rows.map(r=>'<tr><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td></tr>').join("")+'</table></div>').join("");
+function renderList(term){
+  term = (term||"").trim().toLowerCase();
+  let h = "";
+  ORDER.forEach(l=>{
+    const items = byLesson(l).filter(q=>!term || (q.q+" "+answerText(q)+" "+q.e+" "+(q.o||[]).join(" ")).toLowerCase().includes(term));
+    if (!items.length) return;
+    h += '<h2>'+esc(LESSONS[l].wk+" · "+LESSONS[l].short)+' <span class="sub" style="font-family:var(--font-body)">('+items.length+')</span></h2>';
+    h += items.map(q=>'<div class="item"><div class="qq">'+esc(q.q)+' <span class="badge src">'+esc(q.s)+'</span></div><div class="aa'+(q.code?' code':'')+'">'+esc(answerText(q))+'</div><div class="ee">'+esc(q.e)+'</div></div>').join("");
+  });
+  $("#list").innerHTML = h || '<p class="empty">Ничего не найдено.</p>';
+}
+$("#search").addEventListener("input", e=>renderList(e.target.value));
+renderList("");
+
+route();
+</script>
+</body>
+</html>
