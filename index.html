@@ -165,6 +165,13 @@ pre.mono{background:var(--surface);border:1px solid var(--line);border-radius:8p
 .lk b{font-weight:600}
 .lk span{font-size:13px;color:var(--muted);text-align:right}
 .lk.top{border-color:var(--accent);background:var(--accent-soft)}
+.lkc{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.lkc.top{border-color:var(--accent)}
+.lkt{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.lkt span{font-size:13px;color:var(--muted);text-align:right}
+.lkb{display:flex;gap:6px;flex-wrap:wrap}
+.lkb a{font:600 13px var(--font-body);text-decoration:none;padding:5px 10px;border-radius:6px;border:1px solid var(--line);color:var(--ink)}
+.lkb a:first-child{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 @media (prefers-reduced-motion: no-preference){.progress>i{transition:width .25s ease}}
 @media (max-width:420px){.pin{font-size:11px}.wire{font-size:10px}}
 </style>
@@ -194,20 +201,21 @@ pre.mono{background:var(--surface);border:1px solid var(--line);border-radius:8p
     </div>
     <h2>План подготовки</h2>
     <ol class="plan">
-      <li><b>Пройди composite-тест по всем 14 модулям</b> (350 вопросов) по частям. Начни с модулей 10–14: Windows, Linux и macOS, безопасность, IT-профессионал. В квизах LMS их было меньше всего. Потом переходи к модулям 1–9.</li>
-      <li><b>Разбирай ошибки сразу</b> по объяснению под вопросом и выписывай то, чего не знал.</li>
-      <li><b>Перепройди экзамены в самом NetAcad.</b> У экзаменов модулей, чекпоинтов и Practice Final попытки не ограничены. Короткие квизы «Check Your Understanding» внутри модулей идут без оценки.</li>
+      <li><b>Начни с экзаменов модулей 10–14</b>: Windows, Linux и macOS, безопасность, IT-профессионал. В квизах LMS их было меньше всего. Сначала пройди «Тест», потом открой «Ответы» и разбери ошибки.</li>
+      <li><b>Потом модули 1–9 и чекпоинты</b>. Модули 1, 2, 5, 6 и 8 уже были на мидтерме, их можно пройти быстрее.</li>
+      <li><b>Выписывай то, чего не знал</b>: под каждым вопросом в «Ответах» есть объяснение.</li>
+      <li><b>В конце — Course Final Exam (Composite)</b> как общая проверка.</li>
       <li><b>Повтори темы на этом сайте.</b> Многие вопросы из квизов LMS, мидтерма и эндтерма взяты из того же банка.</li>
     </ol>
     <div class="row" style="margin-top:12px"><a class="btn" href="https://www.netacad.com/courses/it-essentials?courseLang=en-US&amp;instance_id=5795fbec-0576-4fbd-bfb1-7e2f189927d1" target="_blank" rel="noopener">Открыть курс IT Essentials 8 (IT-2509)</a></div>
-    <h2>Тесты с ответами</h2>
-    <p class="sub">Онлайн-тесты по IT Essentials 8 на сайте ITExamAnswers. Это сторонний сайт, не Cisco. Ссылки открываются в новой вкладке.</p>
-    <p class="label">Главное</p>
-    <div class="links" id="lk-main"></div>
+    <h2>Экзамены банка с ответами</h2>
+    <p class="sub">Сайт ITExamAnswers, не Cisco. «Ответы» — все вопросы экзамена с правильными ответами и объяснениями. «Тест» — те же вопросы в режиме теста, в случайном порядке. «Квиз» — короткий квиз модуля. Совпадение проверено: в Module 5 Exam есть четыре вопроса с мидтерма слово в слово (firewall, WAN, fiber, EMI).</p>
+    <p class="label">Модули 1–14</p>
+    <div class="links" id="lk-mod"></div>
     <p class="label" style="margin-top:18px">Чекпоинты</p>
     <div class="links" id="lk-cp"></div>
-    <p class="label" style="margin-top:18px">По модулям</p>
-    <div class="links" id="lk-mod"></div>
+    <p class="label" style="margin-top:18px">Финальные экзамены</p>
+    <div class="links" id="lk-main"></div>
   </section>
   <section id="v-train" hidden>
     <h1>Свободная тренировка</h1>
@@ -1140,20 +1148,44 @@ $("#search").addEventListener("input", e=>renderList(e.target.value));
 renderList("");
 
 /* ===================== NETACAD BANK LINKS ===================== */
-const IXA = "https://itexamanswers.net/it-essentials-v8-ite-v6-0-v7-0-";
-const LK_MAIN = [
-  ["Course Final Exam (Composite)","модули 1–14 · 350 вопросов","final-exam-composite-chapters-1-14-test-online.html",true],
-  ["Final Exam","модули 1–9","final-exam-chapters-1-9-test-online.html"],
-  ["Final Exam","модули 10–14","final-exam-chapters-10-14-test-online.html"],
-  ["Practice Final Exam","модули 1–9","practice-final-exam-chapters-1-9-test-online.html"],
-  ["Practice Final Exam","модули 10–14","practice-final-exam-chapters-10-14-test-online.html"]
+const IXA = "https://itexamanswers.net/";
+const TEST = s => IXA+"it-essentials-v8-ite-v6-0-v7-0-"+s+"-test-online.html";
+const MODS = [
+ ["Железо ПК и безопасность работы","introduction-to-personal-computer-hardware"],
+ ["Сборка ПК","pc-assembly"],
+ ["Продвинутое железо","advanced-computer-hardware-quiz-answers"],
+ ["Обслуживание и troubleshooting","preventive-maintenance-and-troubleshooting"],
+ ["Сетевые понятия","networking-concepts"],
+ ["Прикладные сети","applied-networking"],
+ ["Ноутбуки и мобильные","laptops-and-other-mobile-devices"],
+ ["Принтеры","printers"],
+ ["Виртуализация и облако","virtualization-and-cloud-computing"],
+ ["Установка Windows","windows-installation"],
+ ["Настройка Windows","windows-configuration"],
+ ["Мобильные ОС, Linux, macOS","mobile-linux-and-macos-operating-systems"],
+ ["Безопасность","security"],
+ ["IT-профессионал","the-it-professional"]
 ];
-const LK_CP = [["1–4","chapters-1-4-checkpoint-1"],["5–6","chapters-5-6-checkpoint-2"],["7–8","chapters-7-8-checkpoint-3"],["10–11","chapters-10-11-checkpoint-4"],["12–13","chapters-12-13-checkpoint-5"]];
-const MODS = ["Железо ПК и безопасность работы","Сборка ПК","Продвинутое железо","Обслуживание и troubleshooting","Сетевые понятия","Прикладные сети","Ноутбуки и мобильные","Принтеры","Виртуализация и облако","Установка Windows","Настройка Windows","Мобильные ОС, Linux, macOS","Безопасность","IT-профессионал"];
-const lk = (title, sub, href, top) => '<a class="lk'+(top?' top':'')+'" href="'+href+'" target="_blank" rel="noopener"><b>'+esc(title)+'</b><span>'+esc(sub)+'</span></a>';
-$("#lk-main").innerHTML = LK_MAIN.map(x=>lk(x[0],x[1],IXA+x[2],x[3])).join("");
-$("#lk-cp").innerHTML = LK_CP.map(x=>lk("Checkpoint "+x[0],"модули "+x[0],IXA+x[1]+"-test-online.html")).join("");
-$("#lk-mod").innerHTML = MODS.map((m,i)=>lk("Модуль "+(i+1),m,IXA+"chapter-"+(i+1)+"-test-online.html")).join("");
+const CPS = [["1–4","1","1-4"],["5–6","2","5-6"],["7–8","3","7-8"],["10–11","4","10-11"],["12–13","5","12-13"]];
+const FINALS = [
+ ["Course Final Exam (Composite)","модули 1–14 · главный",IXA+"it-essentials-7-0-final-exam-composite-chapters-1-14-answers.html",TEST("final-exam-composite-chapters-1-14"),true],
+ ["Final Exam","модули 1–9",IXA+"it-essentials-7-0-final-exam-chapters-1-9-answers-full.html",TEST("final-exam-chapters-1-9")],
+ ["Final Exam","модули 10–14",IXA+"it-essentials-7-0-final-exam-chapters-10-14-answers-full.html",TEST("final-exam-chapters-10-14")],
+ ["Practice Final Exam","модули 1–9",IXA+"it-essentials-7-0-practice-final-exam-chapters-1-9-answers-full.html",TEST("practice-final-exam-chapters-1-9")],
+ ["Practice Final Exam","модули 10–14",IXA+"it-essentials-7-0-practice-final-exam-chapters-10-14-answers-full.html",TEST("practice-final-exam-chapters-10-14")]
+];
+const ext = (href,label) => '<a href="'+href+'" target="_blank" rel="noopener">'+label+'</a>';
+const lkc = (title, sub, btns, top) => '<div class="lkc'+(top?' top':'')+'"><div class="lkt"><b>'+esc(title)+'</b><span>'+esc(sub)+'</span></div><div class="lkb">'+btns.join("")+'</div></div>';
+$("#lk-mod").innerHTML = MODS.map((m,i)=>{ const n=i+1; return lkc("Модуль "+n, m[0], [
+  ext(IXA+"it-essentials-version-8-0-chapter-"+n+"-exam-answers-ite-v8-0.html","Ответы"),
+  ext(TEST("chapter-"+n),"Тест"),
+  ext(IXA+"it-essentials-8-module-"+n+"-quiz-answers-"+m[1]+".html","Квиз")
+], n>=10); }).join("");
+$("#lk-cp").innerHTML = CPS.map(c=>lkc("Checkpoint "+c[0],"модули "+c[0],[
+  ext(IXA+"ite-8-0-certification-checkpoint-exam-"+c[1]+"-chapters-"+c[2]+"-answers.html","Ответы"),
+  ext(TEST("chapters-"+c[2]+"-checkpoint-"+c[1]),"Тест")
+])).join("");
+$("#lk-main").innerHTML = FINALS.map(f=>lkc(f[0],f[1],[ext(f[2],"Ответы"),ext(f[3],"Тест")],f[4])).join("");
 
 route();
 </script>
