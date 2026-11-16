@@ -1028,7 +1028,7 @@ function renderRun(){
     if (k==="order") a = '<ol class="olist">'+q.items.map(t=>'<li>'+esc(t)+'</li>').join("")+'</ol>';
     else if (k==="match") a = '<ol class="olist">'+q.pairs.map(p=>'<li>'+esc(p[0])+' → <b>'+esc(p[1])+'</b></li>').join("")+'</ol>';
     else a = '<b class="'+(q.code?'code':'')+'">'+esc(rightOf(q).join(", "))+'</b>';
-    h += '<div class="fb'+(ok?'':' bad')+'" role="status"><span class="t">'+(ok?'Верно':(isAnswered(q,ans)?'Неверно':'Нет ответа'))+'</span>'+(ok?'':'Правильно: ')+a+'<p>'+esc(q.e)+'</p></div>';
+    h += '<div class="fb'+(ok?'':' bad')+'" role="status"><span class="t">'+(ok?'Верно':(isAnswered(q,ans)?'Неверно':'Нет ответа'))+'</span>'+(ok?'':'Правильно: ')+a+(q.e?'<p>'+esc(q.e)+'</p>':'')+'</div>';
   }
 
   h += '<div class="nq-nav"><button type="button" class="nq-arw wide" data-act="prev"'+(S.i===0?' disabled':'')+'>‹ Назад</button>';
